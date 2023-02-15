@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "cicdWebserver.fullName" . }}
+  labels:
+    name: {{ template "cicdWebserver.fullName" . }}
+spec:
+  replicas: {{ .Values.cicdWebserver.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "cicdWebserver.fullName" . }}
+  template:
+    metadata:
+      name: {{ template "cicdWebserver.fullName" . }}
+      labels:
+        app.kubernetes.io/name: {{ template "cicdWebserver.fullName" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 0
+      serviceAccountName: {{ .Values.global.serviceAccount }}
+      containers:
+        - name: dolphindb-webserver
+          image: {{ .Values.global.registry }}/{{ .Values.global.repository }}/cicd-webserver:{{ .Values.cicdWebserver.imageTag }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: Namespace
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: DatabaseAddress
+              value: {{ .Values.database.address }}
+            - name: DatabasePort
+              value: {{ .Values.database.port | quote }}
+            - name: DatabaseUsername
+              value: {{ .Values.database.username }}
+            - name: DatabasePassword
+              value: {{ .Values.database.password }}
+            - name: DatabaseName
+              value: {{ .Values.database.databaseName }}
+            - name: DatabaseLogLevel
+              value: {{ .Values.database.logLevel | quote }}
+          volumeMounts:
+            - name: localtime
+              mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

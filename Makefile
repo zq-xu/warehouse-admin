@@ -1,11 +1,29 @@
-CicdWebserverImg ?= 192.168.1.240/beluga/cicd-webserver:develop
+WebserverImg ?= zq-xu/warehouse-admin-webserver:develop
 
 VERSION=$(shell git rev-parse --short HEAD)
 
-cicd-webserver: cicd-webserver-build cicd-webserver-push
+DatabaseAddress=169.254.166.121
+DatabasePort=3306
+DatabaseName=warehouse_admin
+DatabaseUsername=root
+DatabasePassword=root
 
-cicd-webserver-build:
-	docker build --no-cache --build-arg version=$(VERSION) -t ${CicdWebserverImg} -f build/cicd-webserver/Dockerfile .
+webserver: docker-build docker-push
 
-cicd-webserver-push:
-	docker push ${CicdWebserverImg}
+docker-build:
+	docker build --no-cache --build-arg version=$(VERSION) -t ${WebserverImg} -f build/webserver/Dockerfile .
+
+docker-push:
+	docker push ${WebserverImg}
+
+run:
+	docker run \
+	--name warehouse-server \
+	-d \
+	-p 8080:8080 \
+	-e DatabaseAddress=${DatabaseAddress} \
+	-e DatabasePort=${DatabasePort} \
+	-e DatabaseName=${DatabaseName} \
+	-e DatabaseUsername=${DatabaseUsername} \
+	-e DatabasePassword=${DatabasePassword} \
+	${WebserverImg}

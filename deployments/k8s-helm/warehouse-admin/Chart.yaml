@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: A Helm chart for Kubernetes
+name: cicd-webserver
+type: application
+version: v0.1.0
