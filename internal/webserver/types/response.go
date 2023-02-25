@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"time"
+
 	"zq-xu/warehouse-admin/pkg/utils"
 )
 
@@ -62,8 +63,13 @@ type ProductLotForDetail struct {
 	Comment         string    `json:"comment"`
 	Status          int       `json:"status"`
 
-	Product  ProductForDetail  `json:"product"`
-	Supplier SupplierForDetail `json:"supplier"`
+	SupplierId string            `json:"supplierId"`
+	Product    ProductForDetail  `json:"product"`
+	Supplier   SupplierForDetail `json:"supplier"`
+}
+
+func (pl *ProductLotForDetail) SupplierID(id int64) {
+	pl.SupplierId = fmt.Sprintf("%d", id)
 }
 
 type OrderForDetail struct {
@@ -72,9 +78,9 @@ type OrderForDetail struct {
 	CustomerId string `json:"customerId"`
 	SalesmanId string `json:"salesmanId"`
 
-	PayMethod int     `json:"payMethod"`
-	Paid      float32 `json:"paid"`
-	Comment   string  `json:"comment"`
+	PayMode int     `json:"payMode"`
+	Paid    float32 `json:"paid"`
+	Comment string  `json:"comment"`
 
 	DeliveryMode    int             `json:"deliveryMode"`
 	DeliveryAt      *utils.UnixTime `json:"deliveryAt"`

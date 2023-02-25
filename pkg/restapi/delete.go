@@ -12,10 +12,6 @@ import (
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
-const (
-	IDParam = "id"
-)
-
 func Delete(ctx *gin.Context, obj interface{}) {
 	id := ctx.Param(IDParam)
 

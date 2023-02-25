@@ -16,6 +16,7 @@ var (
 		RelativePath: productGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodPost, Path: "", Handler: product.CreateProduct},
+			{Method: http.MethodPut, Path: productPath, Handler: product.UpdateProduct},
 			{Method: http.MethodDelete, Path: productPath, Handler: product.DeleteProduct},
 			{Method: http.MethodGet, Path: productPath, Handler: product.GetProduct},
 			{Method: http.MethodGet, Path: "", Handler: product.ListProduct},

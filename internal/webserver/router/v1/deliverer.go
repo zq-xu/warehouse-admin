@@ -16,6 +16,7 @@ var (
 		RelativePath: delivererGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodPost, Path: "", Handler: deliverer.CreateDeliverer},
+			{Method: http.MethodPut, Path: delivererPath, Handler: deliverer.UpdateDeliverer},
 			{Method: http.MethodDelete, Path: delivererPath, Handler: deliverer.DeleteDeliverer},
 			{Method: http.MethodGet, Path: delivererPath, Handler: deliverer.GetDeliverer},
 			{Method: http.MethodGet, Path: "", Handler: deliverer.ListDeliverer},

@@ -20,9 +20,9 @@ type CreateOrderReq struct {
 	CustomerId string `json:"customerId"`
 	SalesmanId string `json:"salesmanId"`
 
-	PayMethod int     `json:"payMethod"`
-	Paid      float32 `json:"paid"`
-	Comment   string  `json:"comment"`
+	PayMode int     `json:"payMode"`
+	Paid    float32 `json:"paid"`
+	Comment string  `json:"comment"`
 
 	DeliveryMode    int             `json:"deliveryMode"`
 	DeliveryAt      *utils.UnixTime `json:"deliveryAt"`
@@ -51,6 +51,7 @@ func (cr *CreateOrderReq) DelivererID(id int64) {
 
 type ProductForCreation struct {
 	ID       string  `json:"id"`
+	Count    int     `json:"count"`
 	Paid     float32 `json:"paid"`
 	Discount int     `json:"discount"`
 	Comment  string  `json:"comment"`
@@ -74,7 +75,7 @@ func CreateOrder(ctx *gin.Context) {
 			return ei
 		}
 
-		err := db.Omit(model.OmitCreate...).Create(obj).Error
+		err := db.Omit(model.OrderOmitCreate...).Create(obj).Error
 		if err != nil {
 			return response.NewStorageError(response.StorageErrorCode, err)
 		}

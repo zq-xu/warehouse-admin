@@ -16,6 +16,7 @@ var (
 		RelativePath: salesmanGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodPost, Path: "", Handler: salesman.CreateSalesman},
+			{Method: http.MethodPut, Path: salesmanPath, Handler: salesman.UpdateSalesman},
 			{Method: http.MethodDelete, Path: salesmanPath, Handler: salesman.DeleteSalesman},
 			{Method: http.MethodGet, Path: salesmanPath, Handler: salesman.GetSalesman},
 			{Method: http.MethodGet, Path: "", Handler: salesman.ListSalesman},

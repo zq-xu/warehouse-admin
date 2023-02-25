@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	OmitCreate = []string{"Salesman", "Deliverer", "Customer"}
+	OrderOmitCreate = []string{"Salesman", "Deliverer", "Customer"}
 )
 
 // description:"default the column ID is the primaryKey
@@ -36,7 +36,7 @@ type Order struct {
 
 	OrderNo         string
 	Phone           string
-	PayMethod       int
+	PayMode         int
 	DeliveryMode    int
 	DeliveryAddress string
 	DeliveryAt      *time.Time

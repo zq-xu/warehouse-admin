@@ -16,6 +16,7 @@ var (
 		RelativePath: supplierGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodPost, Path: "", Handler: supplier.CreateSupplier},
+			{Method: http.MethodPut, Path: supplierPath, Handler: supplier.UpdateSupplier},
 			{Method: http.MethodDelete, Path: supplierPath, Handler: supplier.DeleteSupplier},
 			{Method: http.MethodGet, Path: supplierPath, Handler: supplier.GetSupplier},
 			{Method: http.MethodGet, Path: "", Handler: supplier.ListSupplier},

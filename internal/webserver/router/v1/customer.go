@@ -16,6 +16,7 @@ var (
 		RelativePath: customerGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodPost, Path: "", Handler: customer.CreateCustomer},
+			{Method: http.MethodPut, Path: customerPath, Handler: customer.UpdateCustomer},
 			{Method: http.MethodDelete, Path: customerPath, Handler: customer.DeleteCustomer},
 			{Method: http.MethodGet, Path: customerPath, Handler: customer.GetCustomer},
 			{Method: http.MethodGet, Path: "", Handler: customer.ListCustomer},

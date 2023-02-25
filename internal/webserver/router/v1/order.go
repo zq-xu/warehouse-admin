@@ -16,6 +16,7 @@ var (
 		RelativePath: orderGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodPost, Path: "", Handler: order.CreateOrder},
+			{Method: http.MethodPut, Path: orderPath, Handler: order.UpdateOrder},
 			{Method: http.MethodDelete, Path: orderPath, Handler: order.DeleteOrder},
 			{Method: http.MethodGet, Path: orderPath, Handler: order.GetOrder},
 			{Method: http.MethodGet, Path: "", Handler: order.ListOrder},

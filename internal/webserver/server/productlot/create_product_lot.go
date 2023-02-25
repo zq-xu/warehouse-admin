@@ -3,7 +3,6 @@ package productlot
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -13,18 +12,19 @@ import (
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 	"zq-xu/warehouse-admin/pkg/store"
+	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 type CreateProductLotReq struct {
-	ProductID       string    `json:"productId"`
-	SupplierID      string    `json:"supplierId"`
-	Count           int       `json:"count"`
-	PurchasingPrice float32   `json:"purchasingPrice"`
-	Paid            float32   `json:"paid"`
-	PurchasingDate  time.Time `json:"purchasingDate"`
-	LotNo           string    `json:"lotNo"`
-	StorageAddress  string    `json:"storageAddress"`
-	Comment         string    `json:"comment"`
+	ProductID       string          `json:"productId"`
+	SupplierID      string          `json:"supplierId"`
+	Count           int             `json:"count"`
+	PurchasingPrice float32         `json:"purchasingPrice"`
+	Paid            float32         `json:"paid"`
+	PurchasingDate  *utils.UnixTime `json:"purchasingDate"`
+	LotNo           string          `json:"lotNo"`
+	StorageAddress  string          `json:"storageAddress"`
+	Comment         string          `json:"comment"`
 
 	Product  model.Product  `json:"-" copier:"-"`
 	Supplier model.Supplier `json:"-" copier:"-"`

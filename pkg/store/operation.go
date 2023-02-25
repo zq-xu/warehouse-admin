@@ -19,6 +19,10 @@ func Update(db *gorm.DB, t interface{}) error {
 	return db.Save(t).Error
 }
 
+func Delete(db *gorm.DB, t interface{}) error {
+	return db.Delete(t).Error
+}
+
 func DeleteByID(db *gorm.DB, t interface{}, id string) error {
 	return db.Delete(t, id).Error
 }
