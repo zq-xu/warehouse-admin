@@ -43,7 +43,7 @@ func optProductLotModelForUpdate(db *gorm.DB, reqParams *UpdateProductLotReq, ob
 
 	utils.OptInt64ByStringPtr(&obj.SupplierID, reqParams.SupplierID)
 	utils.OptFloat32Ptr(&obj.PurchasingPrice, reqParams.PurchasingPrice)
-	utils.OptTimeByUnixTimePtr(&obj.PurchasingDate, reqParams.PurchasingDate)
+	utils.OptTimePtrByUnixTimePtr(&obj.PurchasingDate, reqParams.PurchasingDate)
 	utils.OptFloat32Ptr(&obj.Paid, reqParams.Paid)
 	utils.OptIntPtr(&obj.Count, reqParams.Count)
 	utils.OptStringPtr(&obj.StorageAddress, reqParams.StorageAddress)

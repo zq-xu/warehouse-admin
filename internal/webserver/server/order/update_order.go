@@ -66,7 +66,7 @@ func optOrderModelForUpdate(db *gorm.DB, reqParams *UpdateOrderReq, obj *model.O
 	utils.OptFloat32Ptr(&obj.Paid, reqParams.Paid)
 	utils.OptStringPtr(&obj.Comment, reqParams.Comment)
 	utils.OptIntPtr(&obj.DeliveryMode, reqParams.DeliveryMode)
-	utils.OptTimeByUnixTimePtr(obj.DeliveryAt, reqParams.DeliveryAt)
+	utils.OptTimePtrByUnixTimePtr(&obj.DeliveryAt, reqParams.DeliveryAt)
 	utils.OptStringPtr(&obj.DeliveryAddress, reqParams.DeliveryAddress)
 
 	return nil

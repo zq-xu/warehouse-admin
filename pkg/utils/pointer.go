@@ -45,12 +45,12 @@ func OptUnixTimePtr(dst, src *UnixTime) {
 	*dst = *src
 }
 
-func OptTimeByUnixTimePtr(dst *time.Time, src *UnixTime) {
-	if src == nil {
+func OptTimePtrByUnixTimePtr(dst **time.Time, src *UnixTime) {
+	if src == nil || dst == nil {
 		return
 	}
 
-	*dst = time.Time(*src)
+	*dst = (*time.Time)(src)
 }
 
 func OptInt64ByStringPtr(dst *int64, src *string) {

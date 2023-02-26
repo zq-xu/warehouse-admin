@@ -24,7 +24,7 @@ type ProductLot struct {
 
 	LotNo           string
 	PurchasingPrice float32
-	PurchasingDate  time.Time
+	PurchasingDate  *time.Time
 	Paid            float32
 	Count           int
 	StorageAddress  string
