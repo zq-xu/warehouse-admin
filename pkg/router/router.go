@@ -24,11 +24,17 @@ func RegisterGroup(grps ...*APIGroup) {
 }
 
 func StartRouter(r *gin.Engine) error {
+	addr := net.JoinHostPort(RouteCfg.IP, RouteCfg.Port)
+
 	for _, grp := range groups {
 		grp.AddToEngine(r)
 	}
 
-	return r.Run(net.JoinHostPort(RouteCfg.IP, RouteCfg.Port))
+	if RouteCfg.DisableTLS {
+		return r.Run(addr)
+	}
+
+	return r.RunTLS(addr, RouteCfg.CertPath, RouteCfg.KeyPath)
 }
 
 func NewRouter(fns ...engineOpt) *gin.Engine {
