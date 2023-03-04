@@ -49,7 +49,7 @@ func GenerateCustomerAssociationsQuery(db *gorm.DB) *gorm.DB {
 	opQuery := db.Table(OrderProductTableName).
 		Select("order_id," +
 			"sum(order_product.paid) as total_paid," +
-			"sum(order_product.current_price) as total_price").
+			"sum(order_product.bought_price) as total_price").
 		Group("order_product.order_id")
 
 	return db.Table(OrderTableName).
