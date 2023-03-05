@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"zq-xu/warehouse-admin/pkg/utils"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 const (
@@ -44,20 +44,20 @@ func InitGorm(dbCfg *DatabaseConfig) {
 
 		err := autoMigrate(gormDB)
 		if err != nil {
-			utils.Logger.Errorf("Failed to auto migrate, %v", err)
+			log.Logger.Errorf("Failed to auto migrate, %v", err)
 			return
 		}
 
-		utils.Logger.Infof("Succeed to init db！")
+		log.Logger.Infof("Succeed to init db！")
 	})
 }
 
 func NewGormDB(dbCfg *DatabaseConfig) *gorm.DB {
-	utils.Logger.Debugf("init db connection with %+v", dbCfg)
+	log.Logger.Debugf("init db connection with %+v", dbCfg)
 
 	db, err := gorm.Open(newMysqlDialector(dbCfg), newGormConfig(dbCfg))
 	if err != nil {
-		utils.Logger.Fatal(err)
+		log.Logger.Fatal(err)
 	}
 
 	return db

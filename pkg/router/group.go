@@ -2,8 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-
-	"zq-xu/warehouse-admin/pkg/utils"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 type APIGroup struct {
@@ -57,5 +56,5 @@ func (grp *APIGroup) register(r *gin.RouterGroup) {
 		grp.register(rg)
 	}
 
-	utils.Logger.Infof("Register %s group to router path %s", rg.BasePath(), r.BasePath())
+	log.Logger.Infof("Register %s group to router path %s", rg.BasePath(), r.BasePath())
 }

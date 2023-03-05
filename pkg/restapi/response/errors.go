@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"zq-xu/warehouse-admin/pkg/utils"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 const ErrorBaseCode = "E"
@@ -96,7 +96,7 @@ func RegisterErrorInfo(errType ErrorSectionCode, list ...ServiceErrorInfo) {
 		ec := GenerateErrorCode(errType, sei.ErrorSectionCode)
 		_, ok := errorSet[ec]
 		if ok {
-			utils.Logger.Warningf("error code %v has already exist!", ec)
+			log.Logger.Warningf("error code %v has already exist!", ec)
 			continue
 		}
 

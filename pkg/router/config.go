@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/pflag"
 
 	"zq-xu/warehouse-admin/pkg/config"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 const (
@@ -48,4 +49,7 @@ func (rc *RouteConfig) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&rc.CertPath, "cert-path", os.Getenv(TLSCertPathEnv), "the cert file pah of the tls")
 }
 
-func (rc *RouteConfig) Revise() {}
+func (rc *RouteConfig) Revise() {
+	log.Logger.Infof("RouterConfig is IP: %v; Port: %v; PprofPort: %v; DisableTLS: %v",
+		rc.IP, rc.Port, rc.PprofPort, rc.DisableTLS)
+}

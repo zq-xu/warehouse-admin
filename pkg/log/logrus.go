@@ -4,14 +4,25 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-
-	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 var Logger = logrus.New()
 
+func init() {
+	Logger = logrus.New()
+	Logger.SetOutput(os.Stdout)
+	Logger.SetLevel(logrus.TraceLevel)
+	Logger.SetReportCaller(true)
+
+	//Logger.SetFormatter(&logrus.TextFormatter{
+	//	ForceQuote:      true,
+	//	TimestampFormat: "2006-01-02 15:04:05",
+	//	FullTimestamp:   true,
+	//})
+	Logger.SetFormatter(&MyFormatter{})
+}
+
 func InitLogger() {
-	logrus.SetOutput(os.Stdout)
 	Logger.SetLevel(LogrusCfg.Level)
-	utils.Logger.Info("Succeed to init log!")
+	Logger.Info("Succeed to init log!")
 }

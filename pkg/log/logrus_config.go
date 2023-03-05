@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/pflag"
 
 	"zq-xu/warehouse-admin/pkg/config"
-	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 const (
@@ -48,7 +47,7 @@ func (lc *LogrusConfig) reviseLevel() {
 
 	l, err := logrus.ParseLevel(lc.LogLevel)
 	if err != nil {
-		utils.Logger.Warningf("Failed to parse the log level! %v", err)
+		Logger.Warningf("Failed to parse the log level! %v", err)
 		lc.Level = defaultLogrusLogLevel
 		return
 	}

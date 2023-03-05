@@ -5,8 +5,6 @@ import (
 	"os"
 
 	"github.com/spf13/pflag"
-
-	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 type cfg interface {
@@ -64,7 +62,6 @@ func GetSubCommand(count int) []string {
 	}
 
 	subCommands := os.Args[1 : count+1]
-	utils.Logger.Infof("Sub commands are %+v", subCommands)
 
 	return subCommands
 }
@@ -77,10 +74,7 @@ func InitFlag(flagStartIndex int) {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	_ = pflag.CommandLine.Parse(os.Args[flagStartIndex:])
 
-	for k, v := range cfgSet {
+	for _, v := range cfgSet {
 		v.Revise()
-		utils.Logger.Infof("Config %s is %+v", k, v)
 	}
-
-	utils.Logger.Info("Succeed to init the config!")
 }

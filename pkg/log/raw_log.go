@@ -1,4 +1,4 @@
-package utils
+package log
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	Logger = &logger{}
+//LoadingLogger = &logger{}
 )
 
 type logger struct {
@@ -14,7 +14,6 @@ type logger struct {
 	error   *log.Logger
 	warning *log.Logger
 	info    *log.Logger
-	debug   *log.Logger
 }
 
 func (lg *logger) fatalLogger() *log.Logger {
@@ -49,14 +48,6 @@ func (lg *logger) infoLogger() *log.Logger {
 	return lg.info
 }
 
-func (lg *logger) debugLogger() *log.Logger {
-	if lg.debug == nil {
-		lg.debug = log.New(os.Stdout, "DEBUG: ", log.Lshortfile|log.LstdFlags)
-	}
-
-	return lg.debug
-}
-
 func (lg *logger) Fatal(v ...interface{}) {
 	lg.fatalLogger().Println(v...)
 }
@@ -87,12 +78,4 @@ func (lg *logger) Info(v ...interface{}) {
 
 func (lg *logger) Infof(format string, v ...interface{}) {
 	lg.infoLogger().Printf(format, v...)
-}
-
-func (lg *logger) Debug(v ...interface{}) {
-	lg.debugLogger().Println(v...)
-}
-
-func (lg *logger) Debugf(format string, v ...interface{}) {
-	lg.debugLogger().Printf(format, v...)
 }

@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"zq-xu/warehouse-admin/pkg/config"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 const (
@@ -63,6 +64,8 @@ func (dbc *DatabaseConfig) Revise() {
 	dbc.revisePassword()
 	dbc.reviseDatabaseName()
 	dbc.reviseDatabaseLogLevel()
+
+	log.Logger.Infof("DataBaseConfig is DatabaseName: %v; LogLevel: %v", dbc.DatabaseName, dbc.LogLevel)
 }
 
 func (dbc *DatabaseConfig) reviseAddress() {

@@ -6,14 +6,14 @@ import (
 	"github.com/spf13/pflag"
 
 	"zq-xu/warehouse-admin/pkg/config"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 const (
 	webServerConfigName = "WebServerConfig"
 
-	tmpDirEnv = "TmpDir"
-
-	tmpDir = "/webserver-tmp"
+	tmpDirEnv     = "TmpDir"
+	defaultTmpDir = "/webserver-tmp"
 )
 
 type WebServerConfig struct {
@@ -36,6 +36,8 @@ func (wsc *WebServerConfig) AddFlags(fs *pflag.FlagSet) {
 
 func (wsc *WebServerConfig) Revise() {
 	if wsc.TmpDir == "" {
-		wsc.TmpDir = tmpDir
+		wsc.TmpDir = defaultTmpDir
 	}
+
+	log.Logger.Infof("WebServerConfig is %+v", wsc)
 }

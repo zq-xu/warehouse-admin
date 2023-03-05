@@ -7,7 +7,7 @@ import (
 	"os"
 	"sync"
 
-	"zq-xu/warehouse-admin/pkg/utils"
+	"zq-xu/warehouse-admin/pkg/log"
 )
 
 var pprofOnce = &sync.Once{}
@@ -16,11 +16,11 @@ func StartPprof() {
 	pprofOnce.Do(func() {
 		addr := fmt.Sprintf("%s:%s", RouteCfg.IP, RouteCfg.PprofPort)
 
-		utils.Logger.Infof("start to listen the pprof on %v", addr)
+		log.Logger.Infof("start to listen the pprof on %v", addr)
 
 		err := http.ListenAndServe(addr, nil)
 		if err != nil {
-			utils.Logger.Infof("start pprof failed on %s", addr)
+			log.Logger.Infof("start pprof failed on %s", addr)
 			os.Exit(1)
 		}
 	})
