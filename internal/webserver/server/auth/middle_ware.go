@@ -1,16 +1,22 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
+	"zq-xu/warehouse-admin/internal/webserver/model"
+	"zq-xu/warehouse-admin/internal/webserver/types"
+	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/store"
 )
 
 const (
 	identityKey = "username"
-	AuthUserKey = "auth_user"
 )
 
 var (
@@ -60,8 +66,8 @@ type LoginResp struct {
 }
 
 type UnauthorizedResp struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int    `json:"errorCode"`
+	Message string `json:"errorMessage"`
 }
 
 func init() {
@@ -77,65 +83,77 @@ func generatePayLoad(data interface{}) jwt.MapClaims {
 	return jwt.MapClaims{}
 }
 
-func identityHandler(c *gin.Context) interface{} {
-	claims := jwt.ExtractClaims(c)
+func identityHandler(ctx *gin.Context) interface{} {
+	claims := jwt.ExtractClaims(ctx)
 	u := &User{
 		Username: claims[identityKey].(string),
 	}
 
-	c.Set(AuthUserKey, u)
+	ctx.Set(types.AuthUserNameToken, u.Username)
 	return u
 }
 
-func authenticate(c *gin.Context) (interface{}, error) {
+func authenticate(ctx *gin.Context) (interface{}, error) {
 	user := &User{}
-	if err := c.ShouldBind(user); err != nil {
+	if err := ctx.ShouldBind(user); err != nil {
 		return "", jwt.ErrMissingLoginValues
 	}
 
-	err := validateUser(user)
+	err := validateUser(ctx, user)
 	if err != nil {
-		return nil, jwt.ErrFailedAuthentication
+		return nil, err
 	}
 
 	return user, nil
 }
 
-func loginResponse(c *gin.Context, code int, token string, expire time.Time) {
-	c.JSON(http.StatusCreated,
+func validateUser(ctx *gin.Context, u *User) error {
+	db := store.DB(ctx)
+
+	err := db.
+		Where("name = ? AND password = ?", u.Username, u.Password).
+		First(&model.User{}).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return jwt.ErrFailedAuthentication
+		}
+		return response.NewStorageError(response.StorageErrorCode, err)
+	}
+
+	return nil
+}
+
+func loginResponse(ctx *gin.Context, code int, token string, expire time.Time) {
+	ctx.JSON(http.StatusCreated,
 		&LoginResp{
 			Token:  token,
 			Expire: expire.Format(time.RFC3339),
 		})
 }
 
-func logoutResponse(c *gin.Context, code int) {
-	c.JSON(http.StatusCreated, struct{}{})
+func logoutResponse(ctx *gin.Context, code int) {
+	ctx.JSON(http.StatusCreated, struct{}{})
 }
 
-func authorize(data interface{}, c *gin.Context) bool {
-	v, ok := data.(*User)
-	if !ok {
-		return false
-	}
-
-	err := validateUser(v)
-	if err != nil {
-		return false
-	}
+func authorize(data interface{}, ctx *gin.Context) bool {
+	//v, ok := data.(*User)
+	//if !ok {
+	//	return false
+	//}
+	//
+	//err := validateUser(v)
+	//if err != nil {
+	//	return false
+	//}
 
 	return true
 }
 
-func unauthorized(c *gin.Context, code int, message string) {
-	c.JSON(code,
+func unauthorized(ctx *gin.Context, code int, message string) {
+	ctx.JSON(code,
 		&UnauthorizedResp{
 			Code:    code,
 			Message: message,
 		},
 	)
-}
-
-func validateUser(u *User) error {
-	return nil
 }

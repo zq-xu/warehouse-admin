@@ -18,9 +18,11 @@ func StartRouter() error {
 
 	// The login method here is to be ignored by the auth middleware
 	r.POST("/login", auth.Login)
+	r.POST("/refresh_token", auth.RefreshToken)
+	r.POST("/logout", auth.Logout)
 
 	v1.Register()
-	go router.StartPprof()
 
+	go router.StartPprof()
 	return router.StartRouter(r)
 }

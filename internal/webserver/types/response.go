@@ -13,8 +13,8 @@ type ModelBase struct {
 	UpdatedAt utils.UnixTime `json:"updatedAt"`
 }
 
-func (d *ModelBase) ID(id int64) {
-	d.Id = fmt.Sprintf("%d", id)
+func (d *ModelBase) ID(id interface{}) {
+	d.Id = fmt.Sprintf("%v", id)
 }
 
 type CustomerForDetail struct {

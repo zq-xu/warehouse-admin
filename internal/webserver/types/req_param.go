@@ -12,3 +12,7 @@ const (
 	SalesmanIdQuery  = "salesmanId"
 	DelivererIdQuery = "delivererId"
 )
+
+const (
+	AuthUserNameToken = "auth_username"
+)

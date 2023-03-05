@@ -82,13 +82,17 @@ func NewErrorInfo(errCode ErrorCode, msg ...interface{}) *ErrorInfo {
 	return &v
 }
 
-func GenerateErrorCode(errType, code ErrorSectionCode) ErrorCode {
-	return ErrorCode(fmt.Sprintf("%s%04d%04d", ErrorBaseCode, errType, code))
+func (ei *ErrorInfo) Error() string {
+	return ei.ErrorMessage
 }
 
 func init() {
 	RegisterErrorInfo(GlobalErrorSectionCode, globalErrorList...)
 	RegisterErrorInfo(StorageErrorSectionCode, storageErrorList...)
+}
+
+func GenerateErrorCode(errType, code ErrorSectionCode) ErrorCode {
+	return ErrorCode(fmt.Sprintf("%s%04d%04d", ErrorBaseCode, errType, code))
 }
 
 func RegisterErrorInfo(errType ErrorSectionCode, list ...ServiceErrorInfo) {
