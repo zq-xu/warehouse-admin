@@ -18,7 +18,7 @@ var (
 
 // description:"default the column ID is the primaryKey
 type Order struct {
-	Model
+	store.Model
 
 	// The Order belongs to the Customer
 	CustomerID int64
@@ -57,7 +57,7 @@ func (o *Order) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&Order{})
+	store.RegisterTable(&Order{})
 }
 
 func GenerateReadOrderDB(db, query *gorm.DB) *gorm.DB {

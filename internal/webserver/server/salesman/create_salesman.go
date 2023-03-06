@@ -3,7 +3,6 @@ package salesman
 import (
 	"fmt"
 	"net/http"
-	"zq-xu/warehouse-admin/pkg/store"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -12,6 +11,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/store"
 )
 
 type CreateSalesmanReq struct {
@@ -68,7 +68,7 @@ func newCreateSalesmanReq(ctx *gin.Context) (*CreateSalesmanReq, *response.Error
 
 func generateSalesmanModelForCreation(reqParams *CreateSalesmanReq) (*model.Salesman, *response.ErrorInfo) {
 	t := &model.Salesman{
-		Model: model.GenerateModel(),
+		Model: store.GenerateModel(),
 	}
 
 	err := copier.Copy(t, reqParams)

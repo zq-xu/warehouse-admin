@@ -1,9 +1,10 @@
 package order
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"strconv"
 
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/restapi"
@@ -176,7 +177,7 @@ func addOrderProductForUpdate(db *gorm.DB, obj *model.Order, productId string, p
 	}
 
 	op := model.OrderProduct{
-		Model:       model.GenerateModel(),
+		Model:       store.GenerateModel(),
 		OrderID:     obj.ID,
 		ProductID:   pro.ID,
 		Count:       utils.GetIntFromPtr(proParam.Count),

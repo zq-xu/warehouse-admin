@@ -10,7 +10,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type OrderProduct struct {
-	Model
+	store.Model
 
 	// The OrderProduct belongs to the Order
 	OrderID int64
@@ -34,7 +34,7 @@ func (op *OrderProduct) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&OrderProduct{})
+	store.RegisterTable(&OrderProduct{})
 }
 
 // For Copier

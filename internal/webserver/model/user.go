@@ -27,5 +27,5 @@ func (u *User) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&User{})
+	store.RegisterTable(&User{})
 }

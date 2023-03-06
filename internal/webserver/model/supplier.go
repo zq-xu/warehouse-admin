@@ -12,7 +12,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type Supplier struct {
-	Model
+	store.Model
 
 	Name        string
 	Phone       string
@@ -36,7 +36,7 @@ func (sr *Supplier) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&Supplier{})
+	store.RegisterTable(&Supplier{})
 }
 
 func GenerateReadSupplierDB(db *gorm.DB, query *gorm.DB) *gorm.DB {

@@ -134,7 +134,7 @@ func newCreateOrderReq(ctx *gin.Context) (*CreateOrderReq, *response.ErrorInfo) 
 
 func generateOrderModelForCreation(reqParams *CreateOrderReq) (*model.Order, *response.ErrorInfo) {
 	t := &model.Order{
-		Model:   model.GenerateModel(),
+		Model:   store.GenerateModel(),
 		OrderNo: uuid.New().String(),
 		Comment: reqParams.Comment,
 	}
@@ -151,7 +151,7 @@ func generateOrderModelForCreation(reqParams *CreateOrderReq) (*model.Order, *re
 }
 
 func optOrderProductForCreation(modelObj *model.OrderProduct, proModel *model.Product, proParam *ProductForCreation) {
-	modelObj.Model = model.GenerateModel()
+	modelObj.Model = store.GenerateModel()
 	modelObj.ProductID = proModel.ID
 	modelObj.BoughtPrice = proModel.Price
 	modelObj.Paid = proParam.Paid

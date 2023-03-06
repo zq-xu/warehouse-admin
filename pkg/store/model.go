@@ -1,23 +1,40 @@
 package store
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 
 	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 var (
-	modelSet = make([]interface{}, 0)
+	tableSet = make([]interface{}, 0)
 )
 
-func RegisterModel(m interface{}) {
+type Model struct {
+	ID        int64 `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+func GenerateModel() Model {
+	return Model{
+		ID:        utils.GenerateUUID(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+}
+
+func RegisterTable(m interface{}) {
 	if utils.IsInterfaceValueNil(m) {
 		return
 	}
 
-	modelSet = append(modelSet, m)
+	tableSet = append(tableSet, m)
 }
 
 func autoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(modelSet...)
+	return db.AutoMigrate(tableSet...)
 }

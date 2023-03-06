@@ -68,7 +68,7 @@ func newCreateSupplierReq(ctx *gin.Context) (*CreateSupplierReq, *response.Error
 
 func generateSupplierModelForCreation(reqParams *CreateSupplierReq) (*model.Supplier, *response.ErrorInfo) {
 	t := &model.Supplier{
-		Model: model.GenerateModel(),
+		Model: store.GenerateModel(),
 	}
 
 	err := copier.Copy(t, reqParams)

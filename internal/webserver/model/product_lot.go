@@ -12,7 +12,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type ProductLot struct {
-	Model
+	store.Model
 
 	// The ProductLot belongs to the Product
 	ProductID int64
@@ -36,5 +36,5 @@ func (o *ProductLot) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&ProductLot{})
+	store.RegisterTable(&ProductLot{})
 }

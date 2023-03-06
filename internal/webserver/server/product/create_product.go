@@ -68,7 +68,7 @@ func newCreateProductReq(ctx *gin.Context) (*CreateProductReq, *response.ErrorIn
 
 func generateProductModelForCreation(reqParams *CreateProductReq) (*model.Product, *response.ErrorInfo) {
 	t := &model.Product{
-		Model: model.GenerateModel(),
+		Model: store.GenerateModel(),
 	}
 
 	err := copier.Copy(t, reqParams)

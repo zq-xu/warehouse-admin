@@ -12,7 +12,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type Deliverer struct {
-	Model
+	store.Model
 
 	Name    string
 	Phone   string
@@ -27,7 +27,7 @@ func (o *Deliverer) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&Deliverer{})
+	store.RegisterTable(&Deliverer{})
 }
 
 func GenerateReadDelivererDB(db *gorm.DB) *gorm.DB {

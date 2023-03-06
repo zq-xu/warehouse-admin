@@ -12,7 +12,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type Customer struct {
-	Model
+	store.Model
 
 	Name        string
 	Phone       string
@@ -36,7 +36,7 @@ func (o *Customer) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&Customer{})
+	store.RegisterTable(&Customer{})
 }
 
 func GenerateReadCustomerDB(db *gorm.DB, query *gorm.DB) *gorm.DB {

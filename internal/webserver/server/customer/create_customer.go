@@ -3,7 +3,6 @@ package customer
 import (
 	"fmt"
 	"net/http"
-	"zq-xu/warehouse-admin/pkg/store"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -12,6 +11,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/store"
 )
 
 type CreateCustomerReq struct {
@@ -68,7 +68,7 @@ func newCreateCustomerReq(ctx *gin.Context) (*CreateCustomerReq, *response.Error
 
 func generateCustomerModelForCreation(reqParams *CreateCustomerReq) (*model.Customer, *response.ErrorInfo) {
 	t := &model.Customer{
-		Model: model.GenerateModel(),
+		Model: store.GenerateModel(),
 	}
 
 	err := copier.Copy(t, reqParams)

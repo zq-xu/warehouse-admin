@@ -11,7 +11,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type Product struct {
-	Model
+	store.Model
 
 	Name           string
 	Image          string
@@ -38,7 +38,7 @@ func (o *Product) TableName() string {
 }
 
 func init() {
-	store.RegisterModel(&Product{})
+	store.RegisterTable(&Product{})
 }
 
 func GenerateReadProductDB(db *gorm.DB, query *gorm.DB) *gorm.DB {
