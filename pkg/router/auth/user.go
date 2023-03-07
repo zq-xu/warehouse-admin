@@ -1,8 +1,6 @@
-package model
+package auth
 
 import (
-	"gorm.io/gorm"
-
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
@@ -12,7 +10,7 @@ const (
 
 // description:"default the column ID is the primaryKey
 type User struct {
-	gorm.Model
+	store.Model
 
 	Name     string
 	Alias    string

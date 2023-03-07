@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"zq-xu/warehouse-admin/internal/webserver/server/auth"
 	"zq-xu/warehouse-admin/pkg/router"
+	"zq-xu/warehouse-admin/pkg/router/auditlog"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/utils"
 )
 
@@ -24,7 +25,8 @@ func registerAPIGroup(grps ...*router.APIGroup) {
 
 func Register() {
 	v1Grp := router.NewGroup(VersionV1)
-	v1Grp.AddMiddlewares(auth.AuthMiddleware.MiddlewareFunc())
+	v1Grp.AddMiddlewares(auth.Middleware.MiddlewareFunc())
+	v1Grp.AddMiddlewares(auditlog.Middleware.MiddlewareFunc())
 
 	for _, v := range apiGrps {
 		v1Grp.AddAPIGroup(v)

@@ -1,84 +1,105 @@
-package audit
+package auditlog
 
 import (
-	"fmt"
+	"bytes"
+	"context"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"zq-xu/warehouse-admin/internal/webserver/types"
+	"zq-xu/warehouse-admin/pkg/log"
+	"zq-xu/warehouse-admin/pkg/router/auth"
+	"zq-xu/warehouse-admin/pkg/store"
 )
 
-type bodyLogWriter struct {
+var (
+	Middleware = NewAuditorMiddleware()
+)
+
+type bodyWriter struct {
 	gin.ResponseWriter
-	bc chan []byte
+	bodyBuf *bytes.Buffer
 }
 
-func (w *bodyLogWriter) Write(b []byte) (int, error) {
-	w.bc <- b
+type auditLogMiddleware struct{}
+
+func NewBodyWriter(ctx *gin.Context) *bodyWriter {
+	return &bodyWriter{
+		ResponseWriter: ctx.Writer,
+		bodyBuf:        bytes.NewBufferString(""),
+	}
+}
+
+func (w *bodyWriter) Write(b []byte) (int, error) {
+	w.bodyBuf.Write(b)
 	return w.ResponseWriter.Write(b)
 }
 
-type AuditorMiddleware struct {
-	parser map[string]AuditLog
+func (w *bodyWriter) Bytes() []byte {
+	return w.bodyBuf.Bytes()
 }
 
-func (aw *AuditorMiddleware) MiddlewareFunc() gin.HandlerFunc {
+func NewAuditorMiddleware() *auditLogMiddleware {
+	return &auditLogMiddleware{}
+}
+
+func (aw *auditLogMiddleware) MiddlewareFunc() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		aw.middlewareImpl(ctx)
 	}
 }
 
-func (aw *AuditorMiddleware) middlewareImpl(ctx *gin.Context) {
+func (aw *auditLogMiddleware) middlewareImpl(ctx *gin.Context) {
 	skipAudit := aw.isSkipAudit(ctx)
 	if skipAudit {
 		ctx.Next()
 		return
 	}
 
-	bc := make(chan []byte)
-	ctx.Writer = &bodyLogWriter{
-		ResponseWriter: ctx.Writer,
-		bc:             bc,
-	}
+	reqBody := aw.extractRequestBody(ctx)
+
+	w := NewBodyWriter(ctx)
+	ctx.Writer = w
 	ctx.Next()
 
-	go record(ctx, bc)
+	aw.recordAuditLog(NewModelAuditLog(ctx, reqBody, w.Bytes()))
 }
 
-func (aw *AuditorMiddleware) isSkipAudit(c *gin.Context) bool {
-	method := c.Request.Method
-	if method == http.MethodGet {
+func (aw *auditLogMiddleware) extractRequestBody(ctx *gin.Context) []byte {
+	if ctx.Request.Body == nil {
+		return []byte{}
+	}
+
+	bodyBytes, _ := ioutil.ReadAll(ctx.Request.Body)
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	return bodyBytes
+}
+
+func (aw *auditLogMiddleware) isSkipAudit(ctx *gin.Context) bool {
+	method := ctx.Request.Method
+	if method != http.MethodPost &&
+		method != http.MethodPut &&
+		method != http.MethodDelete {
 		return true
 	}
 
-	username := c.GetString(types.AuthUserNameToken)
-	if username == "" {
+	id := ctx.GetString(auth.AuthUserIDToken)
+	if id == "" {
 		return true
 	}
 
 	return false
 }
 
-func record(ctx *gin.Context, bc <-chan []byte) {
-	bs := <-bc
-	url := ctx.Request.URL.Path
-
-	message := fmt.Sprintf("%v", returnJson.Message)
-
-	adminInfo := admin.(**service.RunningClaims)
-	adminId := (*adminInfo).ID
-	adminName := (*adminInfo).Account
-
-	var log = model.AdminLog{
-		AdminId:   adminId,
-		AdminName: adminName,
-		Method:    method,
-		Url:       url,
-		Ip:        util.RemoteIP(c.Request),
-		Code:      returnJson.Code,
-		Message:   message,
+func (aw *auditLogMiddleware) recordAuditLog(m *ModelAuditLog) {
+	if m.StatusCode >= http.StatusBadRequest {
+		return
 	}
 
-	model.CreateLog(log)
+	db := store.DB(context.Background())
+	err := store.Create(db, m)
+	if err != nil {
+		log.Logger.Errorf("Failed to create the audit log. %v", err)
+	}
 }

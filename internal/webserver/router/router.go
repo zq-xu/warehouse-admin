@@ -2,8 +2,8 @@ package router
 
 import (
 	"zq-xu/warehouse-admin/internal/webserver/router/v1"
-	"zq-xu/warehouse-admin/internal/webserver/server/auth"
 	"zq-xu/warehouse-admin/pkg/router"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
 
 const (

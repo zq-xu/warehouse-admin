@@ -3,8 +3,8 @@ package v1
 import (
 	"fmt"
 	"net/http"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 
-	"zq-xu/warehouse-admin/internal/webserver/server/user"
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/router"
 )
@@ -15,7 +15,7 @@ var (
 	UserGroup     = &router.APIGroup{
 		RelativePath: userGroupPath,
 		APIs: []*router.API{
-			{Method: http.MethodGet, Path: "/info", Handler: user.GetUserInfo},
+			{Method: http.MethodGet, Path: "/info", Handler: auth.GetUserInfo},
 		},
 	}
 )

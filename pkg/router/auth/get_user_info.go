@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"context"
@@ -9,14 +9,12 @@ import (
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 
-	"zq-xu/warehouse-admin/internal/webserver/model"
-	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
 var (
-	roleSet = map[int]string{
+	RoleSet = map[int]string{
 		0: "user",
 		1: "admin",
 		2: "super",
@@ -24,25 +22,24 @@ var (
 )
 
 type ResponseOfUserInfo struct {
-	types.ModelBase `json:",inline"`
-
 	Name     string `json:"name"`
 	UserName string `json:"userName"`
 	UserRole string `json:"userRole"`
 	Status   int    `json:"status"`
 }
 
-func (d *ResponseOfUserInfo) Role(r int) {
-	d.UserRole = roleSet[r]
+func (r *ResponseOfUserInfo) Role(rl int) {
+	r.UserRole = RoleSet[rl]
 }
 
-func (d *ResponseOfUserInfo) Alias(a string) {
-	d.UserName = a
+func (r *ResponseOfUserInfo) Alias(a string) {
+	r.UserName = a
 }
 
 func GetUserInfo(ctx *gin.Context) {
-	name := ctx.GetString(types.AuthUserNameToken)
-	obj, ei := getUserModel(ctx, name)
+	id := ctx.GetString(AuthUserIDToken)
+
+	obj, ei := getUserModel(ctx, id)
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
 		return
@@ -57,11 +54,11 @@ func GetUserInfo(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func getUserModel(ctx context.Context, name string) (*model.User, *response.ErrorInfo) {
+func getUserModel(ctx context.Context, id string) (*User, *response.ErrorInfo) {
 	db := store.DB(ctx)
 
-	obj := &model.User{}
-	err := db.Where("name = ?", name).First(obj).Error
+	obj := &User{}
+	err := db.Where("id = ?", id).First(obj).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, response.NewCommonError(response.NotFoundErrorCode)
@@ -72,7 +69,7 @@ func getUserModel(ctx context.Context, name string) (*model.User, *response.Erro
 	return obj, nil
 }
 
-func generateUserResponse(obj *model.User) (*ResponseOfUserInfo, *response.ErrorInfo) {
+func generateUserResponse(obj *User) (*ResponseOfUserInfo, *response.ErrorInfo) {
 	resp := &ResponseOfUserInfo{}
 
 	err := copier.Copy(resp, obj)

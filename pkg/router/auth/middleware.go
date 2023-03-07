@@ -3,30 +3,29 @@ package auth
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
-	"zq-xu/warehouse-admin/internal/webserver/model"
-	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
 const (
-	identityKey = "username"
+	AuthUserIDToken = "auth_user_id"
 )
 
 var (
-	AuthMiddleware *jwt.GinJWTMiddleware
+	Middleware *jwt.GinJWTMiddleware
 
 	gjm = &jwt.GinJWTMiddleware{
 		Key:             []byte("secret key"),
 		Timeout:         time.Hour,
 		MaxRefresh:      time.Hour,
-		IdentityKey:     identityKey,
+		IdentityKey:     "user",
 		PayloadFunc:     generatePayLoad,
 		IdentityHandler: identityHandler,
 		Authenticator:   authenticate,
@@ -55,7 +54,8 @@ var (
 	}
 )
 
-type User struct {
+type UserReq struct {
+	ID       string
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
@@ -71,30 +71,31 @@ type UnauthorizedResp struct {
 }
 
 func init() {
-	AuthMiddleware, _ = jwt.New(gjm)
+	Middleware, _ = jwt.New(gjm)
 }
 
 func generatePayLoad(data interface{}) jwt.MapClaims {
-	if v, ok := data.(*User); ok {
+	if v, ok := data.(*UserReq); ok {
 		return jwt.MapClaims{
-			identityKey: v.Username,
+			AuthUserIDToken: v.ID,
 		}
 	}
+
 	return jwt.MapClaims{}
 }
 
 func identityHandler(ctx *gin.Context) interface{} {
 	claims := jwt.ExtractClaims(ctx)
-	u := &User{
-		Username: claims[identityKey].(string),
+	u := &UserReq{
+		ID: claims[AuthUserIDToken].(string),
 	}
 
-	ctx.Set(types.AuthUserNameToken, u.Username)
+	ctx.Set(AuthUserIDToken, u.ID)
 	return u
 }
 
 func authenticate(ctx *gin.Context) (interface{}, error) {
-	user := &User{}
+	user := &UserReq{}
 	if err := ctx.ShouldBind(user); err != nil {
 		return "", jwt.ErrMissingLoginValues
 	}
@@ -107,12 +108,13 @@ func authenticate(ctx *gin.Context) (interface{}, error) {
 	return user, nil
 }
 
-func validateUser(ctx *gin.Context, u *User) error {
+func validateUser(ctx *gin.Context, u *UserReq) error {
 	db := store.DB(ctx)
 
+	mu := &User{}
 	err := db.
 		Where("name = ? AND password = ?", u.Username, u.Password).
-		First(&model.User{}).Error
+		First(mu).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return jwt.ErrFailedAuthentication
@@ -120,6 +122,7 @@ func validateUser(ctx *gin.Context, u *User) error {
 		return response.NewStorageError(response.StorageErrorCode, err)
 	}
 
+	u.ID = strconv.FormatInt(mu.ID, 10)
 	return nil
 }
 

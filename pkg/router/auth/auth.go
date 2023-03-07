@@ -5,13 +5,13 @@ import (
 )
 
 func Login(ctx *gin.Context) {
-	AuthMiddleware.LoginHandler(ctx)
+	Middleware.LoginHandler(ctx)
 }
 
 func Logout(ctx *gin.Context) {
-	AuthMiddleware.LogoutHandler(ctx)
+	Middleware.LogoutHandler(ctx)
 }
 
 func RefreshToken(ctx *gin.Context) {
-	AuthMiddleware.RefreshHandler(ctx)
+	Middleware.RefreshHandler(ctx)
 }
