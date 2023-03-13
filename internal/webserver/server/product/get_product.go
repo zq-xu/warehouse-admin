@@ -16,6 +16,9 @@ type ResponseOfProduct struct {
 
 	CreateProductReq `json:",inline"`
 
+	Image     string `json:"image"`
+	Thumbnail string `json:"thumbnail"`
+
 	TotalCount int `json:"totalCount"`
 	Status     int `json:"status"`
 

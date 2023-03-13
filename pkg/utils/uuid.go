@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/bwmarrin/snowflake"
 	"github.com/google/uuid"
 	"github.com/sony/sonyflake"
@@ -13,6 +15,10 @@ var flake = sonyflake.NewSonyflake(sonyflake.Settings{
 
 func GenerateUUID() int64 {
 	return GenerateSonyFlakeUUID()
+}
+
+func GenerateStringUUID() string {
+	return fmt.Sprintf("%d", GenerateSonyFlakeUUID())
 }
 
 func GenerateSnowFlakeUUID() int64 {

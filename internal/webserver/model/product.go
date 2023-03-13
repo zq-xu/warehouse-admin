@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
@@ -15,6 +16,7 @@ type Product struct {
 
 	Name           string
 	Image          string
+	Thumbnail      string
 	Price          float32
 	StorageAddress string
 	Comment        string `gorm:"size:512"`

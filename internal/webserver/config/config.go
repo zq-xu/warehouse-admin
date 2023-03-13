@@ -1,6 +1,7 @@
 package config
 
 import (
+	"zq-xu/warehouse-admin/pkg/awsapi"
 	"zq-xu/warehouse-admin/pkg/config"
 	"zq-xu/warehouse-admin/pkg/store"
 )
@@ -8,7 +9,9 @@ import (
 func InitConfig() {
 	store.InitDataBaseConfig()
 
-	InitWebServerConfig()
+	awsapi.InitSessionConfig()
+	awsapi.InitS3Config()
 
+	InitWebServerConfig()
 	config.InitConfig()
 }

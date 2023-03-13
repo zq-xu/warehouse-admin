@@ -20,8 +20,12 @@ type Model struct {
 }
 
 func GenerateModel() Model {
+	return GenerateModelWithID(utils.GenerateUUID())
+}
+
+func GenerateModelWithID(id int64) Model {
 	return Model{
-		ID:        utils.GenerateUUID(),
+		ID:        id,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

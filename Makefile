@@ -1,4 +1,4 @@
-WebserverImg ?= zqxu1993/warehouse-admin-webserver:v0.0.6
+WebserverImg ?= zqxu1993/warehouse-admin-webserver:v0.0.8
 
 VERSION=$(shell git rev-parse --short HEAD)
 

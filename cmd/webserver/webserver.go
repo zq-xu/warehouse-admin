@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"zq-xu/warehouse-admin/pkg/store"
 
 	"zq-xu/warehouse-admin/internal/webserver/config"
 	_ "zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/internal/webserver/router"
+	"zq-xu/warehouse-admin/pkg/awsapi"
 	"zq-xu/warehouse-admin/pkg/log"
+	"zq-xu/warehouse-admin/pkg/store"
 )
 
 func main() {
@@ -22,6 +23,8 @@ func main() {
 	log.InitLogger()
 
 	store.InitDatabase()
+
+	awsapi.InitS3Client()
 
 	assert(router.StartRouter())
 }

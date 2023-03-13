@@ -7,6 +7,7 @@ package awsapi
 import (
 	"io"
 	"os"
+	"path"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -84,4 +85,8 @@ func (as3 *s3Client) UploadFileByReader(fr io.Reader, bucket, bucketPath string)
 		Key:    aws.String(bucketPath),
 		ACL:    &as3.cfg.ACL,
 	})
+}
+
+func GenerateS3BucketPath(ps ...string) string {
+	return path.Join(append([]string{S3Cfg.Volume}, ps...)...)
 }

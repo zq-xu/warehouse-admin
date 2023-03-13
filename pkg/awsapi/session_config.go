@@ -29,7 +29,7 @@ type SessionConfig struct {
 	Endpoint     string
 }
 
-func InitWebServerConfig() {
+func InitSessionConfig() {
 	config.RegisterCfg(awsSessionConfigName, SessionCfg)
 }
 

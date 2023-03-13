@@ -10,6 +10,8 @@ const (
 	GetFormFileErrorCode
 	SaveFileErrorCode
 	CheckDirErrorCode
+	UploadFileToS3ErrorCode
+	ResizeFileErrorCode
 )
 
 var commonErrorList = []ServiceErrorInfo{
@@ -20,6 +22,8 @@ var commonErrorList = []ServiceErrorInfo{
 	{ErrorSectionCode: GetFormFileErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusBadRequest, ErrorMessageFmt: "Get form file error!"}},
 	{ErrorSectionCode: SaveFileErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "Save file error!"}},
 	{ErrorSectionCode: CheckDirErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "Check dir error!"}},
+	{ErrorSectionCode: UploadFileToS3ErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "Upload file error!"}},
+	{ErrorSectionCode: ResizeFileErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "resize file error!"}},
 }
 
 func init() {

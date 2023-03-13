@@ -3,6 +3,7 @@ package auditlog
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -17,12 +18,16 @@ var (
 	Middleware = NewAuditorMiddleware()
 )
 
+type BodyGenerateFn func(ctx *gin.Context) []byte
+
 type bodyWriter struct {
 	gin.ResponseWriter
 	bodyBuf *bytes.Buffer
 }
 
-type auditLogMiddleware struct{}
+type auditLogMiddleware struct {
+	BodyGenerateFnSet map[string]BodyGenerateFn
+}
 
 func NewBodyWriter(ctx *gin.Context) *bodyWriter {
 	return &bodyWriter{
@@ -41,7 +46,13 @@ func (w *bodyWriter) Bytes() []byte {
 }
 
 func NewAuditorMiddleware() *auditLogMiddleware {
-	return &auditLogMiddleware{}
+	return &auditLogMiddleware{
+		BodyGenerateFnSet: make(map[string]BodyGenerateFn),
+	}
+}
+
+func (aw *auditLogMiddleware) RegisterBodyGenerateFn(method, url string, fn BodyGenerateFn) {
+	aw.BodyGenerateFnSet[generateAPIKey(method, url)] = fn
 }
 
 func (aw *auditLogMiddleware) MiddlewareFunc() gin.HandlerFunc {
@@ -67,6 +78,15 @@ func (aw *auditLogMiddleware) middlewareImpl(ctx *gin.Context) {
 }
 
 func (aw *auditLogMiddleware) extractRequestBody(ctx *gin.Context) []byte {
+	fn, ok := aw.BodyGenerateFnSet[generateAPIKey(ctx.Request.Method, ctx.Request.URL.Path)]
+	if ok {
+		return fn(ctx)
+	}
+
+	return defaultBodyGenerateFn(ctx)
+}
+
+func defaultBodyGenerateFn(ctx *gin.Context) []byte {
 	if ctx.Request.Body == nil {
 		return []byte{}
 	}
@@ -102,4 +122,8 @@ func (aw *auditLogMiddleware) recordAuditLog(m *ModelAuditLog) {
 	if err != nil {
 		log.Logger.Errorf("Failed to create the audit log. %v", err)
 	}
+}
+
+func generateAPIKey(method, url string) string {
+	return fmt.Sprintf("%s---%s", method, url)
 }

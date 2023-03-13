@@ -160,3 +160,7 @@ func unauthorized(ctx *gin.Context, code int, message string) {
 		},
 	)
 }
+
+func GetAuthUserId(ctx *gin.Context) string {
+	return ctx.GetString(AuthUserIDToken)
+}

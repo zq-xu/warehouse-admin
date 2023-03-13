@@ -1,12 +1,16 @@
 package v1
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 
 	"zq-xu/warehouse-admin/internal/webserver/server/product"
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/router"
+	"zq-xu/warehouse-admin/pkg/router/auditlog"
 )
 
 var (
@@ -28,4 +32,9 @@ var (
 
 func init() {
 	registerAPIGroup(ProductGroup)
+	auditlog.Middleware.RegisterBodyGenerateFn(http.MethodPost, VersionV1+productGroupPath, func(ctx *gin.Context) []byte {
+		r, _ := product.GenerateBaseReq(ctx)
+		bs, _ := json.Marshal(r)
+		return bs
+	})
 }
