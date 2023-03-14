@@ -22,6 +22,7 @@ import (
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
+	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 const (
@@ -36,6 +37,8 @@ const (
 
 	productImageSubDir = "products/images"
 )
+
+var productImageFormatSuffix = []string{".jpg", ".jpeg", ".png", ".svg"}
 
 type CreateProductReq struct {
 	Name           string  `json:"name"`
@@ -158,6 +161,9 @@ func uploadImageToS3(ctx *gin.Context, reqParams *CreateProductReq) *response.Er
 	defer f.Close()
 
 	reqParams.imageFormatSuffix = getFileFormatSuffix(filename)
+	if !utils.ContainString(productImageFormatSuffix, reqParams.imageFormatSuffix) {
+		return response.NewCommonError(response.InvalidImageFormatErrorCode)
+	}
 
 	imgS3Path := awsapi.GenerateS3BucketPath(reqParams.userId, productImageSubDir,
 		fmt.Sprintf("%d%s", reqParams.modelObj.ID, reqParams.imageFormatSuffix))

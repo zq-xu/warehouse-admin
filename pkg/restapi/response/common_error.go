@@ -12,6 +12,7 @@ const (
 	CheckDirErrorCode
 	UploadFileToS3ErrorCode
 	ResizeFileErrorCode
+	InvalidImageFormatErrorCode
 )
 
 var commonErrorList = []ServiceErrorInfo{
@@ -24,6 +25,7 @@ var commonErrorList = []ServiceErrorInfo{
 	{ErrorSectionCode: CheckDirErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "Check dir error!"}},
 	{ErrorSectionCode: UploadFileToS3ErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "Upload file error!"}},
 	{ErrorSectionCode: ResizeFileErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "resize file error!"}},
+	{ErrorSectionCode: InvalidImageFormatErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusBadRequest, ErrorMessageFmt: "invalid file format error! support jpg / jpeg / png."}},
 }
 
 func init() {
