@@ -24,6 +24,7 @@ var (
 			{Method: http.MethodDelete, Path: productPath, Handler: product.DeleteProduct},
 			{Method: http.MethodGet, Path: productPath, Handler: product.GetProduct},
 			{Method: http.MethodGet, Path: "", Handler: product.ListProduct},
+			{Method: http.MethodGet, Path: "/export", Handler: product.ExportProduct},
 			{Method: http.MethodPost, Path: "/upload", Handler: product.UploadFile},
 			{Method: http.MethodPost, Path: "/stockin", Handler: product.StockInProduct},
 		},
