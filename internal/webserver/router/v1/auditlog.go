@@ -13,6 +13,7 @@ var (
 		RelativePath: auditLogGroupPath,
 		APIs: []*router.API{
 			{Method: http.MethodGet, Path: "", Handler: auditlog.ListAuditLog},
+			{Method: http.MethodGet, Path: "/export", Handler: auditlog.ExportAuditLog},
 		},
 	}
 )

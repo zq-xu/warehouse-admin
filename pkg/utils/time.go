@@ -26,3 +26,7 @@ func (t *UnixTime) UnmarshalJSON(data []byte) error {
 	*t = UnixTime(time.UnixMilli(dataUnix))
 	return err
 }
+
+func (t UnixTime) String() string {
+	return (time.Time)(t).String()
+}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
 	"zq-xu/warehouse-admin/pkg/restapi/list"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 	"zq-xu/warehouse-admin/pkg/store"
@@ -36,6 +37,7 @@ type ListConf struct {
 	FuzzySearchColumnList  []string
 	LoadAssociationsDBFunc func(db, queryDB *gorm.DB) *gorm.DB
 	GenerateQueryFunc      func(db *gorm.DB, reqParams *list.Params) *gorm.DB
+	ResponseWriteFunc      func(ctx *gin.Context)
 }
 
 var ApiListInstance = &apiList{}
@@ -52,6 +54,11 @@ func (l *apiList) List(ctx *gin.Context, conf *ListConf) {
 	resp, ei := l.list(ctx, reqParams, conf)
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
+		return
+	}
+
+	if conf.ResponseWriteFunc != nil {
+		conf.ResponseWriteFunc(ctx)
 		return
 	}
 
@@ -76,7 +83,12 @@ func (l *apiList) list(ctx context.Context, reqParams *list.Params, conf *ListCo
 		return nil, response.NewStorageError(response.StorageErrorCode, err)
 	}
 
-	return list.NewPageResponse(int(count), reqParams.PageInfo, conf.TransObjToRespFunc()), nil
+	var resp interface{}
+	if conf.TransObjToRespFunc != nil {
+		resp = conf.TransObjToRespFunc()
+	}
+
+	return list.NewPageResponse(int(count), reqParams.PageInfo, resp), nil
 }
 
 func (l *apiList) loadModel(db, queryDB *gorm.DB, reqParams *list.Params, conf *ListConf) error {
@@ -95,7 +107,11 @@ func (l *apiList) loadAllInfo(db, queryDB *gorm.DB, reqParams *list.Params, conf
 		reqParams.SortQuery,
 		conf.ModelObj)
 
-	return conf.LoadAssociationsDBFunc(db, queryDB).
+	if conf.LoadAssociationsDBFunc != nil {
+		queryDB = conf.LoadAssociationsDBFunc(db, queryDB)
+	}
+
+	return queryDB.
 		//Preload(clause.Associations).
 		Find(conf.ModelObjList).Error
 }
