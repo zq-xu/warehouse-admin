@@ -1,6 +1,6 @@
 module zq-xu/warehouse-admin
 
-go 1.17
+go 1.20
 
 require (
 	github.com/appleboy/gin-jwt/v2 v2.9.1

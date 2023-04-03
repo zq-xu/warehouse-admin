@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-//  go test -v create_order_test.go create_order.go -test.run TestCreateOrderReq
+// go test -v create_order_test.go create_order.go -test.run TestCreateOrderReq
 func TestCreateOrderReq(t *testing.T) {
 	r := &CreateOrderReq{}
 

@@ -19,7 +19,7 @@ var (
 	}
 )
 
-//GetMethodFilter filter the Get request
+// GetMethodFilter filter the Get request
 func GetMethodFilter(param gin.LogFormatterParams) string {
 	return methodFilterSet[param.Method]
 }
@@ -32,7 +32,7 @@ func LoggerFilter(skipPaths []string, formatters ...gin.LogFormatter) gin.Handle
 	})
 }
 
-//FormatterMiddleWare is for log format
+// FormatterMiddleWare is for log format
 func FormatterMiddleWare(formatters ...gin.LogFormatter) gin.LogFormatter {
 	return func(param gin.LogFormatterParams) string {
 		var statusColor, methodColor, resetColor string

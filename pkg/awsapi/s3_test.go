@@ -8,10 +8,10 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-//go test -v \
+// go test -v \
 // session.go session_config.go \
 // s3_config.go s3.go s3_test.go \
-//-test.run TestS3UploadFile -count=1
+// -test.run TestS3UploadFile -count=1
 func TestS3UploadFile(t *testing.T) {
 	filePath := "./s3.go"
 	bucket := "xzq-bucket"

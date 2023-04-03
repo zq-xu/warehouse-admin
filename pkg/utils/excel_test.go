@@ -7,9 +7,9 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-//go test -v \
-//excel.go excel_test.go \
-//-test.run TestExportToPath -count=1
+// go test -v \
+// excel.go excel_test.go \
+// -test.run TestExportToPath -count=1
 func TestExportToPath(t *testing.T) {
 	dataKey := make([]map[string]string, 0)
 	dataKey = append(dataKey, map[string]string{

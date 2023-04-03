@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-//  go test -v gorm_test.go gorm.go -test.run TestGorm
+// go test -v gorm_test.go gorm.go -test.run TestGorm
 func TestGorm(t *testing.T) {
 	dbInfo := &DatabaseInfo{
 		Address:      "192.168.1.99",

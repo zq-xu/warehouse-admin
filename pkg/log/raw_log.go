@@ -6,7 +6,7 @@ import (
 )
 
 var (
-//LoadingLogger = &logger{}
+// LoadingLogger = &logger{}
 )
 
 type logger struct {

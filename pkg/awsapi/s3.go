@@ -1,7 +1,8 @@
 // refer to https://blog.csdn.net/Edu_enth/article/details/125993181
-// aws docs: https://docs.aws.amazon.com/zh_cn/sdk-for-go/v1/developer-guide/sdk-utilities.html
-//           https://docs.aws.amazon.com/sdk-for-go/api/service/s3/#S3.PutObject
-//           https://docs.aws.amazon.com/sdk-for-go/api/service/s3/#pkg-examples
+// aws docs:
+// https://docs.aws.amazon.com/zh_cn/sdk-for-go/v1/developer-guide/sdk-utilities.html
+// https://docs.aws.amazon.com/sdk-for-go/api/service/s3/#S3.PutObject
+// https://docs.aws.amazon.com/sdk-for-go/api/service/s3/#pkg-examples
 package awsapi
 
 import (

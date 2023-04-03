@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-//  go test -v create_supplier_test.go create_supplier.go -test.run TestCreateSupplierReq
+// go test -v create_supplier_test.go create_supplier.go -test.run TestCreateSupplierReq
 func TestCreateSupplierReq(t *testing.T) {
 	r := &CreateSupplierReq{}
 

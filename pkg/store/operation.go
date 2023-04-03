@@ -50,8 +50,8 @@ func GetCount(db *gorm.DB, t interface{}) (int64, error) {
 }
 
 // The value should be initialized slice, or example:
-// 	list := make([]Model, 0)
-//  List(&list)
+// list := make([]Model, 0)
+// List(&list)
 func List(db *gorm.DB, value interface{}) error {
 	return db.Preload(clause.Associations).Find(value).Error
 }
