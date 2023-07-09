@@ -77,7 +77,7 @@ func ExportProduct(ctx *gin.Context) {
 }
 
 func exportProductListDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadProductDB(queryDB, model.GenerateProductAssociationsQuery(db)).
+	return model.GenerateReadProductDB(queryDB, db).
 		Preload("ProductLots")
 }
 

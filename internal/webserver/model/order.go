@@ -25,11 +25,11 @@ type Order struct {
 	Customer   Customer
 
 	// The Order belongs to the Salesman
-	SalesmanID int64
+	SalesmanID int64 `gorm:"default:null"`
 	Salesman   Salesman
 
 	// The Order belongs to the Deliverer
-	DelivererID int64
+	DelivererID int64 `gorm:"default:null"`
 	Deliverer   Deliverer
 
 	OrderProducts []OrderProduct
@@ -75,7 +75,7 @@ func GenerateOrderAssociationsQuery(db *gorm.DB) *gorm.DB {
 	return db.Table(OrderProductTableName).
 		Select("order_id," +
 			"sum(order_product.paid) as total_paid," +
-			"sum(order_product.bought_price) as total_price").
+			"sum(order_product.final_price) as total_price").
 		Group("order_product.order_id")
 }
 

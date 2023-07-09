@@ -33,6 +33,8 @@ type ProductDetail struct {
 	Product
 
 	TotalCount int
+	SoldCount  int
+	Stocks     int
 }
 
 func (o *Product) TableName() string {
@@ -43,15 +45,24 @@ func init() {
 	store.RegisterTable(&Product{})
 }
 
-func GenerateReadProductDB(db *gorm.DB, query *gorm.DB) *gorm.DB {
-	return db.Table(ProductTableName).
-		Select("product.*,q.total_count").
-		Joins("left join (?) q on q.product_id = product.id", query)
+func GenerateReadProductDB(db, queryDB *gorm.DB) *gorm.DB {
+	return queryDB.Table(ProductTableName).
+		Select("product.*,q.total_count,op.sold_count,(q.total_count - op.sold_count) as stocks").
+		//Select("product.*,q.total_count,op.sold_count").
+		Joins("left join (?) q on q.product_id = product.id", generateProductTotalCountQuery(db)).
+		Joins("left join (?) op on op.product_id = product.id", generateProductSoldCountQuery(db))
 }
 
-func GenerateProductAssociationsQuery(db *gorm.DB) *gorm.DB {
+func generateProductTotalCountQuery(db *gorm.DB) *gorm.DB {
 	return db.Table(ProductLotTableName).
 		Select("product_id," +
 			"sum(product_lot.count) as total_count").
 		Group("product_lot.product_id")
+}
+
+func generateProductSoldCountQuery(db *gorm.DB) *gorm.DB {
+	return db.Table(OrderProductTableName).
+		Select("product_id," +
+			"sum(order_product.count) as sold_count").
+		Group("order_product.product_id")
 }

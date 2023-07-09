@@ -27,10 +27,10 @@ type UpdateOrderReq struct {
 }
 
 type ProductForUpdate struct {
-	Count    *int     `json:"count"`
-	Paid     *float32 `json:"paid"`
-	Discount *int     `json:"discount"`
-	Comment  *string  `json:"comment"`
+	Count      *int     `json:"count"`
+	Paid       *float32 `json:"paid"`
+	FinalPrice *float32 `json:"finalPrice"`
+	Comment    *string  `json:"comment"`
 }
 
 func UpdateOrder(ctx *gin.Context) {
@@ -183,7 +183,7 @@ func addOrderProductForUpdate(db *gorm.DB, obj *model.Order, productId string, p
 		Count:       utils.GetIntFromPtr(proParam.Count),
 		BoughtPrice: pro.Price,
 		Paid:        utils.GetFloat32FromPtr(proParam.Paid),
-		Discount:    utils.GetIntFromPtr(proParam.Discount),
+		FinalPrice:  utils.GetFloat32FromPtr(proParam.FinalPrice),
 		Comment:     utils.GetStringFromPtr(proParam.Comment),
 	}
 
@@ -202,7 +202,7 @@ func updateOrderProduct(db *gorm.DB, obj *model.OrderProduct, proParam *ProductF
 
 	utils.OptIntPtr(&obj.Count, proParam.Count)
 	utils.OptFloat32Ptr(&obj.Paid, proParam.Paid)
-	utils.OptIntPtr(&obj.Discount, proParam.Discount)
+	utils.OptFloat32Ptr(&obj.FinalPrice, proParam.FinalPrice)
 	utils.OptStringPtr(&obj.Comment, proParam.Comment)
 
 	err := store.Update(db, obj)

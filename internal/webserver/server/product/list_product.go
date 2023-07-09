@@ -27,7 +27,7 @@ func ListProduct(ctx *gin.Context) {
 }
 
 func listProductDetailDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadProductDB(queryDB, model.GenerateProductAssociationsQuery(db))
+	return model.GenerateReadProductDB(db, queryDB)
 }
 
 func generateProductListResponse(objList []model.ProductDetail) interface{} {

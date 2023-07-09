@@ -20,7 +20,10 @@ type ResponseOfProduct struct {
 	Thumbnail string `json:"thumbnail"`
 
 	TotalCount int `json:"totalCount"`
-	Status     int `json:"status"`
+	SoldCount  int `json:"soldCount"`
+	Stocks     int `json:"stocks"`
+
+	Status int `json:"status"`
 
 	ProductLots []types.ProductLotForDetail `json:"productLots"`
 }
@@ -40,7 +43,7 @@ func GetProduct(ctx *gin.Context) {
 }
 
 func getProductDetailDB(db *gorm.DB) *gorm.DB {
-	return model.GenerateReadProductDB(db, model.GenerateProductAssociationsQuery(db)).
+	return model.GenerateReadProductDB(db, db).
 		Preload("ProductLots.Supplier")
 }
 

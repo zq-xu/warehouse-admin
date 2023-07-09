@@ -24,9 +24,9 @@ type PageResponse struct {
 }
 
 type PageInfo struct {
-	PageNum   int `json:"page_num"`
-	PageSize  int `json:"page_size"`
-	PageCount int `json:"page_total"`
+	PageNum   int `json:"pageNum"`
+	PageSize  int `json:"pageSize"`
+	PageCount int `json:"pageCount"`
 }
 
 func GetPageInfo(ctx *gin.Context) (*PageInfo, *response.ErrorInfo) {

@@ -25,7 +25,7 @@ type OrderProduct struct {
 	// So it's necessary to record it.
 	BoughtPrice float32
 	Paid        float32
-	Discount    int
+	FinalPrice  float32
 	Comment     string `gorm:"size:512"`
 }
 

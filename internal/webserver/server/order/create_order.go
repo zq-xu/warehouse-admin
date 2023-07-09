@@ -50,11 +50,11 @@ func (cr *CreateOrderReq) DelivererID(id int64) {
 }
 
 type ProductForCreation struct {
-	ID       string  `json:"id"`
-	Count    int     `json:"count"`
-	Paid     float32 `json:"paid"`
-	Discount int     `json:"discount"`
-	Comment  string  `json:"comment"`
+	ID         string  `json:"id"`
+	Count      int     `json:"count"`
+	Paid       float32 `json:"paid"`
+	FinalPrice float32 `json:"finalPrice"`
+	Comment    string  `json:"comment"`
 }
 
 func CreateOrder(ctx *gin.Context) {
@@ -92,18 +92,20 @@ func CreateOrder(ctx *gin.Context) {
 }
 
 func loadModelForCreation(reqParams *CreateOrderReq, db *gorm.DB) *response.ErrorInfo {
-	err := store.GetByID(db, &reqParams.Salesman, reqParams.SalesmanId)
+	err := store.GetByID(db, &reqParams.Customer, reqParams.CustomerId)
 	if err != nil {
 		return response.NewCommonError(response.NotFoundErrorCode)
 	}
 
-	err = store.GetByID(db, &reqParams.Customer, reqParams.CustomerId)
-	if err != nil {
-		return response.NewCommonError(response.NotFoundErrorCode)
+	if reqParams.SalesmanId != "" {
+		err := store.GetByID(db, &reqParams.Salesman, reqParams.SalesmanId)
+		if err != nil {
+			return response.NewCommonError(response.NotFoundErrorCode)
+		}
 	}
 
 	if reqParams.DelivererId != "" {
-		err = store.GetByID(db, &reqParams.Deliverer, reqParams.DelivererId)
+		err := store.GetByID(db, &reqParams.Deliverer, reqParams.DelivererId)
 		if err != nil {
 			return response.NewCommonError(response.NotFoundErrorCode)
 		}
@@ -112,7 +114,7 @@ func loadModelForCreation(reqParams *CreateOrderReq, db *gorm.DB) *response.Erro
 	reqParams.OrderProducts = make([]model.OrderProduct, len(reqParams.Products))
 	for k, v := range reqParams.Products {
 		pro := model.Product{}
-		err = store.GetByID(db, &pro, v.ID)
+		err := store.GetByID(db, &pro, v.ID)
 		if err != nil {
 			return response.NewCommonError(response.NotFoundErrorCode)
 		}
@@ -152,9 +154,13 @@ func generateOrderModelForCreation(reqParams *CreateOrderReq) (*model.Order, *re
 
 func optOrderProductForCreation(modelObj *model.OrderProduct, proModel *model.Product, proParam *ProductForCreation) {
 	modelObj.Model = store.GenerateModel()
+
 	modelObj.ProductID = proModel.ID
+	modelObj.Count = proParam.Count
+
 	modelObj.BoughtPrice = proModel.Price
+	modelObj.FinalPrice = proParam.FinalPrice
 	modelObj.Paid = proParam.Paid
-	modelObj.Discount = proParam.Discount
+
 	modelObj.Comment = proParam.Comment
 }
