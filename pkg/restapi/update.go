@@ -16,6 +16,7 @@ import (
 type UpdateConf struct {
 	UpdateReq        interface{}
 	ModelObj         interface{}
+	OmitString       []string
 	OptModelFunc     func(db *gorm.DB) *response.ErrorInfo
 	DealAssociations func(db *gorm.DB) *response.ErrorInfo
 }
@@ -44,7 +45,7 @@ func Update(ctx *gin.Context, conf *UpdateConf) {
 			return ei
 		}
 
-		err = store.Update(db, conf.ModelObj)
+		err = store.Update(db, conf.ModelObj, conf.OmitString...)
 		if err != nil {
 			return response.NewStorageError(response.StorageErrorCode, err)
 		}

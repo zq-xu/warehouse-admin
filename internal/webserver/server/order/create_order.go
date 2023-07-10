@@ -146,9 +146,9 @@ func generateOrderModelForCreation(reqParams *CreateOrderReq) (*model.Order, *re
 		return nil, response.NewCommonError(response.GenerateModelErrorCode, err.Error())
 	}
 
-	t.CustomerID = reqParams.Customer.ID
-	t.SalesmanID = reqParams.Salesman.ID
-	t.DelivererID = reqParams.Deliverer.ID
+	t.CustomerID = utils.GetInt64PtrDefaultNil(reqParams.Customer.ID)
+	t.SalesmanID = utils.GetInt64PtrDefaultNil(reqParams.Salesman.ID)
+	t.DelivererID = utils.GetInt64PtrDefaultNil(reqParams.Deliverer.ID)
 	return t, nil
 }
 

@@ -38,8 +38,9 @@ func UpdateOrder(ctx *gin.Context) {
 	obj := &model.Order{}
 
 	conf := &restapi.UpdateConf{
-		UpdateReq:        reqParams,
-		ModelObj:         obj,
+		UpdateReq: reqParams,
+		ModelObj:  obj,
+		//OmitString:       model.OrderOmitUpdate,
 		OptModelFunc:     func(db *gorm.DB) *response.ErrorInfo { return optOrderModelForUpdate(db, reqParams, obj) },
 		DealAssociations: func(db *gorm.DB) *response.ErrorInfo { return updateOrderProducts(db, reqParams, obj) },
 	}
@@ -83,7 +84,7 @@ func optCustomerID(db *gorm.DB, reqParams *UpdateOrderReq, obj *model.Order) *re
 		return ei
 	}
 
-	utils.OptInt64ByStringPtr(&obj.CustomerID, reqParams.CustomerId)
+	obj.CustomerID = utils.GetInt64PtrByStringPtrDefaultNil(reqParams.CustomerId)
 	return nil
 }
 
@@ -97,7 +98,7 @@ func optSalesmanID(db *gorm.DB, reqParams *UpdateOrderReq, obj *model.Order) *re
 		return ei
 	}
 
-	utils.OptInt64ByStringPtr(&obj.SalesmanID, reqParams.SalesmanId)
+	obj.SalesmanID = utils.GetInt64PtrByStringPtrDefaultNil(reqParams.SalesmanId)
 	return nil
 }
 
@@ -111,7 +112,7 @@ func optDelivererID(db *gorm.DB, reqParams *UpdateOrderReq, obj *model.Order) *r
 		return ei
 	}
 
-	utils.OptInt64ByStringPtr(&obj.DelivererID, reqParams.DelivererId)
+	obj.DelivererID = utils.GetInt64PtrByStringPtrDefaultNil(reqParams.DelivererId)
 	return nil
 }
 

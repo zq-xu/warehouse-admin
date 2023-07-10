@@ -14,6 +14,7 @@ const (
 
 var (
 	OrderOmitCreate = []string{"Salesman", "Deliverer", "Customer"}
+	OrderOmitUpdate = []string{"SalesmanID", "DelivererID", "CustomerID"}
 )
 
 // description:"default the column ID is the primaryKey
@@ -21,15 +22,15 @@ type Order struct {
 	store.Model
 
 	// The Order belongs to the Customer
-	CustomerID int64
+	CustomerID *int64
 	Customer   Customer
 
 	// The Order belongs to the Salesman
-	SalesmanID int64 `gorm:"default:null"`
+	SalesmanID *int64 `gorm:"default:null"`
 	Salesman   Salesman
 
 	// The Order belongs to the Deliverer
-	DelivererID int64 `gorm:"default:null"`
+	DelivererID *int64 `gorm:"default:null"`
 	Deliverer   Deliverer
 
 	OrderProducts []OrderProduct

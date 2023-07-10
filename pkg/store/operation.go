@@ -15,8 +15,8 @@ func CreateOmit(db *gorm.DB, t interface{}, asc ...string) error {
 	return db.Omit(asc...).Create(t).Error
 }
 
-func Update(db *gorm.DB, t interface{}) error {
-	return db.Save(t).Error
+func Update(db *gorm.DB, t interface{}, asc ...string) error {
+	return db.Omit(asc...).Save(t).Error
 }
 
 func Delete(db *gorm.DB, t interface{}) error {

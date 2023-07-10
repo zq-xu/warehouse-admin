@@ -61,6 +61,27 @@ func OptInt64ByStringPtr(dst *int64, src *string) {
 	*dst, _ = strconv.ParseInt(*src, 10, 64)
 }
 
+func GetInt64PtrDefaultNil(src int64) *int64 {
+	if src == 0 {
+		return nil
+	}
+
+	return &src
+}
+
+func GetInt64PtrByStringPtrDefaultNil(src *string) *int64 {
+	if src == nil {
+		return nil
+	}
+
+	dst, _ := strconv.ParseInt(*src, 10, 64)
+	if dst == 0 {
+		return nil
+	}
+
+	return &dst
+}
+
 func GetStringFromPtr(ptr *string) string {
 	if ptr == nil {
 		return ""
