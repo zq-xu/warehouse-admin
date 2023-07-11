@@ -39,14 +39,14 @@ func init() {
 	store.RegisterTable(&Supplier{})
 }
 
-func GenerateReadSupplierDB(db *gorm.DB, query *gorm.DB) *gorm.DB {
-	return db.
+func GenerateReadSupplierDB(db, queryDB *gorm.DB) *gorm.DB {
+	return queryDB.
 		Preload("ProductLots.Product").
 		Select("supplier.*,q.total_paid,q.total_price").
-		Joins("left join (?) q on q.supplier_id = supplier.id", query)
+		Joins("left join (?) q on q.supplier_id = supplier.id", generateSupplierAssociationsQuery(db))
 }
 
-func GenerateSupplierAssociationsQuery(db *gorm.DB) *gorm.DB {
+func generateSupplierAssociationsQuery(db *gorm.DB) *gorm.DB {
 	return db.Table(ProductLotTableName).
 		Select("supplier_id," +
 			"sum(product_lot.paid) as total_paid," +

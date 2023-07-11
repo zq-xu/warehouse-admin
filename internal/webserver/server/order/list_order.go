@@ -30,7 +30,7 @@ func ListOrder(ctx *gin.Context) {
 }
 
 func LoadAssociationsDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadOrderDB(queryDB, model.GenerateOrderAssociationsQuery(db))
+	return model.GenerateReadOrderDB(db, queryDB)
 }
 
 func loadOrderListQuery(db *gorm.DB, reqParams *list.Params) *gorm.DB {

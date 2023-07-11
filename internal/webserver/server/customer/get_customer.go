@@ -38,7 +38,7 @@ func GetCustomer(ctx *gin.Context) {
 }
 
 func getCustomerDetailDB(db *gorm.DB) *gorm.DB {
-	return model.GenerateReadCustomerDB(db, model.GenerateCustomerAssociationsQuery(db))
+	return model.GenerateReadCustomerDB(db, db)
 }
 
 func generateCustomerResponse(obj *model.CustomerDetail, resp *ResponseOfCustomer) *response.ErrorInfo {

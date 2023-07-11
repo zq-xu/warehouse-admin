@@ -37,13 +37,13 @@ func init() {
 	store.RegisterTable(&Salesman{})
 }
 
-func GenerateReadSalesmanDB(db *gorm.DB, query *gorm.DB) *gorm.DB {
-	return db.
+func GenerateReadSalesmanDB(db, queryDB *gorm.DB) *gorm.DB {
+	return queryDB.
 		Select("salesman.*,q.total_paid,q.total_price").
-		Joins("left join (?) q on q.salesman_id = salesman.id", query)
+		Joins("left join (?) q on q.salesman_id = salesman.id", generateSalesmanAssociationsQuery(db))
 }
 
-func GenerateSalesmanAssociationsQuery(db *gorm.DB) *gorm.DB {
+func generateSalesmanAssociationsQuery(db *gorm.DB) *gorm.DB {
 	opQuery := db.Table(OrderProductTableName).
 		Select("order_id," +
 			"sum(order_product.paid) as total_paid," +

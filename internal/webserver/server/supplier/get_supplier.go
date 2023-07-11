@@ -39,7 +39,7 @@ func GetSupplier(ctx *gin.Context) {
 }
 
 func getSupplierDetailDB(db *gorm.DB) *gorm.DB {
-	return model.GenerateReadSupplierDB(db, model.GenerateSupplierAssociationsQuery(db))
+	return model.GenerateReadSupplierDB(db, db)
 }
 
 func generateSupplierResponse(obj *model.SupplierDetail, resp *ResponseOfSupplier) *response.ErrorInfo {

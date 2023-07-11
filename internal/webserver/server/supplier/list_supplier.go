@@ -27,7 +27,7 @@ func ListSupplier(ctx *gin.Context) {
 }
 
 func listSupplierDetailDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadSupplierDB(queryDB, model.GenerateSupplierAssociationsQuery(db))
+	return model.GenerateReadSupplierDB(db, queryDB)
 }
 
 func generateSupplierListResponse(objList []model.SupplierDetail) interface{} {

@@ -27,7 +27,7 @@ func ListCustomer(ctx *gin.Context) {
 }
 
 func LoadAssociationsDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadCustomerDB(queryDB, model.GenerateCustomerAssociationsQuery(db))
+	return model.GenerateReadCustomerDB(db, queryDB)
 }
 
 func generateCustomerListResponse(objList []model.CustomerDetail) interface{} {

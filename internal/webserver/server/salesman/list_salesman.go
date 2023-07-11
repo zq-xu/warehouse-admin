@@ -27,7 +27,7 @@ func ListSalesman(ctx *gin.Context) {
 }
 
 func LoadAssociationsDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadSalesmanDB(queryDB, model.GenerateSalesmanAssociationsQuery(db))
+	return model.GenerateReadSalesmanDB(db, queryDB)
 }
 
 func generateSalesmanListResponse(objList []model.SalesmanDetail) interface{} {

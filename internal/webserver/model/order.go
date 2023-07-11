@@ -61,31 +61,21 @@ func init() {
 	store.RegisterTable(&Order{})
 }
 
-func GenerateReadOrderDB(db, query *gorm.DB) *gorm.DB {
-	return db.
+func GenerateReadOrderDB(db, queryDB *gorm.DB) *gorm.DB {
+	return queryDB.
 		Preload("Customer").
 		Preload("Salesman").
 		Preload("Deliverer").
 		Preload("OrderProducts").
 		Preload("OrderProducts.Product").
 		Select("`order`.*,q.total_paid,q.total_price").
-		Joins("left join (?) q on q.order_id = order.id", query)
+		Joins("left join (?) q on q.order_id = order.id", generateOrderTotalPaidQuery(db))
 }
 
-func GenerateOrderAssociationsQuery(db *gorm.DB) *gorm.DB {
+func generateOrderTotalPaidQuery(db *gorm.DB) *gorm.DB {
 	return db.Table(OrderProductTableName).
 		Select("order_id," +
 			"sum(order_product.paid) as total_paid," +
 			"sum(order_product.final_price) as total_price").
 		Group("order_product.order_id")
-}
-
-func LoadOrderListAssociations(db *gorm.DB) *gorm.DB {
-	return db.
-		Preload("Orders").
-		Preload("Orders.Customer").
-		Preload("Orders.Salesman").
-		Preload("Orders.Deliverer").
-		Preload("Orders.OrderProducts").
-		Preload("Orders.OrderProducts.Product")
 }

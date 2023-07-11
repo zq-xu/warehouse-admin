@@ -42,7 +42,7 @@ func GetOrder(ctx *gin.Context) {
 }
 
 func getSupplierDetailDB(db *gorm.DB) *gorm.DB {
-	return model.GenerateReadOrderDB(db, model.GenerateOrderAssociationsQuery(db))
+	return model.GenerateReadOrderDB(db, db)
 }
 
 func generateSupplierResponse(obj *model.OrderDetail, resp *ResponseOfOrder) *response.ErrorInfo {

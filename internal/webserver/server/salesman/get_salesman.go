@@ -42,7 +42,7 @@ func GetSalesman(ctx *gin.Context) {
 }
 
 func getSupplierDetailDB(db *gorm.DB) *gorm.DB {
-	return model.GenerateReadSalesmanDB(db, model.GenerateSalesmanAssociationsQuery(db))
+	return model.GenerateReadSalesmanDB(db, db)
 }
 
 func generateSupplierResponse(obj *model.SalesmanDetail, resp *ResponseOfSalesman) *response.ErrorInfo {
