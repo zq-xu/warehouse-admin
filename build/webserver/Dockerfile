@@ -1,4 +1,4 @@
-FROM golang:1.17 as builder
+FROM golang:1.20 as builder
 
 ENV PROJECT=zq-xu/warehouse-admin
 ENV WORKDIR=/GoProject/src/$PROJECT
