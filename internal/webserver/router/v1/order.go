@@ -20,6 +20,7 @@ var (
 			{Method: http.MethodDelete, Path: orderPath, Handler: order.DeleteOrder},
 			{Method: http.MethodGet, Path: orderPath, Handler: order.GetOrder},
 			{Method: http.MethodGet, Path: "", Handler: order.ListOrder},
+			{Method: http.MethodPost, Path: "/stockout", Handler: order.StockOut},
 		},
 	}
 )
