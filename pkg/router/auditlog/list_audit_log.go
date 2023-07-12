@@ -41,7 +41,7 @@ func ListAuditLog(ctx *gin.Context) {
 }
 
 func LoadAssociationsDB(db, queryDB *gorm.DB) *gorm.DB {
-	return GenerateReadAuditLogDB(db)
+	return GenerateReadAuditLogDB(queryDB)
 }
 
 func generateAuditLogListResponse(objList []ModelAuditLog) interface{} {
