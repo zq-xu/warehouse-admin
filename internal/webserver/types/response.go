@@ -97,8 +97,10 @@ type OrderForDetail struct {
 	Salesman      SalesmanForDetail       `json:"salesman"`
 	Deliverer     DelivererForDetail      `json:"deliverer"`
 	OrderProducts []OrderProductForDetail `json:"products"`
+	StockOuts     []StockOutForDetail     `json:"stockouts"`
 }
 
+// Revise
 // if order is preload, the 'TotalPrice' and 'TotalPaid' can't be calculated,
 // so revise these property manually.
 func (od *OrderForDetail) Revise() {
@@ -125,4 +127,16 @@ type OrderProductForDetail struct {
 
 func (opd *OrderProductForDetail) ProductID(id int64) {
 	opd.ProductId = fmt.Sprintf("%d", id)
+}
+
+type StockOutForDetail struct {
+	ModelBase    `json:",inline"`
+	ProductLotId string              `json:"productLotId"`
+	ProductLot   ProductLotForDetail `json:"productLot"`
+	Count        int                 `json:"count"`
+	Comment      string              `json:"comment"`
+}
+
+func (so *StockOutForDetail) ProductLotID(id int64) {
+	so.ProductLotId = fmt.Sprintf("%d", id)
 }

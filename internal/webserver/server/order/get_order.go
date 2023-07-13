@@ -11,41 +11,25 @@ import (
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 )
 
-type ResponseOfOrder struct {
-	types.ModelBase `json:",inline"`
-
-	CreateOrderReq `json:",inline"`
-
-	OrderNo    string  `json:"orderNo"`
-	TotalPrice float32 `json:"totalPrice"`
-	TotalPaid  float32 `json:"totalPaid"`
-	Status     int     `json:"status"`
-
-	Customer      types.CustomerForDetail       `json:"customer"`
-	OrderProducts []types.OrderProductForDetail `json:"products"`
-	Salesman      types.SalesmanForDetail       `json:"salesman"`
-	Deliverer     types.DelivererForDetail      `json:"deliverer"`
-}
-
 func GetOrder(ctx *gin.Context) {
 	obj := &model.OrderDetail{}
-	resp := &ResponseOfOrder{}
+	resp := &types.OrderForDetail{}
 
 	conf := &restapi.DetailConf{
 		ModelObj:               obj,
 		RespObj:                resp,
-		TransObjToRespFunc:     func() interface{} { return generateSupplierResponse(obj, resp) },
-		LoadAssociationsDBFunc: getSupplierDetailDB,
+		TransObjToRespFunc:     func() interface{} { return generateOrderResponse(obj, resp) },
+		LoadAssociationsDBFunc: getOrderDetailDB,
 	}
 
 	restapi.GetDetail(ctx, conf)
 }
 
-func getSupplierDetailDB(db *gorm.DB) *gorm.DB {
+func getOrderDetailDB(db *gorm.DB) *gorm.DB {
 	return model.GenerateReadOrderDB(db, db)
 }
 
-func generateSupplierResponse(obj *model.OrderDetail, resp *ResponseOfOrder) *response.ErrorInfo {
+func generateOrderResponse(obj *model.OrderDetail, resp *types.OrderForDetail) *response.ErrorInfo {
 	err := copier.Copy(resp, obj)
 	if err != nil {
 		return response.NewCommonError(response.GenerateModelErrorCode, err.Error())

@@ -34,6 +34,7 @@ type Order struct {
 	Deliverer   Deliverer
 
 	OrderProducts []OrderProduct
+	StockOuts     []StockOut
 
 	OrderNo         string
 	Phone           string
@@ -68,6 +69,8 @@ func GenerateReadOrderDB(db, queryDB *gorm.DB) *gorm.DB {
 		Preload("Deliverer").
 		Preload("OrderProducts").
 		Preload("OrderProducts.Product").
+		Preload("StockOuts.ProductLot").
+		Preload("StockOuts.ProductLot.Product").
 		Select("`order`.*,q.total_paid,q.total_price").
 		Joins("left join (?) q on q.order_id = order.id", generateOrderTotalPaidQuery(db))
 }

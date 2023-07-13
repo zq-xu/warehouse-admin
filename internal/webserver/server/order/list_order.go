@@ -12,7 +12,7 @@ import (
 	"zq-xu/warehouse-admin/pkg/restapi/list"
 )
 
-type ListResponseOfOrder []ResponseOfOrder
+type ListResponseOfOrder []types.OrderForDetail
 
 func ListOrder(ctx *gin.Context) {
 	listObj := make([]model.OrderDetail, 0)
@@ -56,7 +56,7 @@ func generateOrderListResponse(objList []model.OrderDetail) interface{} {
 	items := make(ListResponseOfOrder, 0)
 
 	for _, v := range objList {
-		r := ResponseOfOrder{}
+		r := types.OrderForDetail{}
 
 		err := copier.Copy(&r, &v)
 		if err != nil {
