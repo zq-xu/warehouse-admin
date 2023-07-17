@@ -2,11 +2,13 @@ package list
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 )
 
 const (
-	SortByQuery = "sort_by"
+	SortByQuery    = "sort_by"
+	defaultSortStr = "updated_at,desc"
 )
 
 type Params struct {
@@ -24,6 +26,6 @@ func GetListParams(ctx *gin.Context) (*Params, *response.ErrorInfo) {
 	return &Params{
 		PageInfo:  pi,
 		Queries:   GetQueries(ctx),
-		SortQuery: ctx.Query(SortByQuery),
+		SortQuery: ctx.DefaultQuery(SortByQuery, defaultSortStr),
 	}, nil
 }

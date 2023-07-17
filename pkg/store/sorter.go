@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"zq-xu/warehouse-admin/pkg/utils"
 )
 
 const (
@@ -12,6 +14,8 @@ const (
 
 	sortSplit = ":::"
 )
+
+var baseConditions = []string{"updated_at", "created_at", "id"}
 
 type sorter struct {
 	conditions []sortCondition
@@ -57,7 +61,7 @@ func (sh *sorter) SQLString() string {
 func (sh *sorter) Purge(st interface{}) {
 	res := make([]sortCondition, 0, len(sh.conditions))
 	for _, sc := range sh.conditions {
-		if StructHasField(st, sc.condition) {
+		if utils.ContainString(baseConditions, sc.condition) || IsStructHasField(st, sc.condition) {
 			res = append(res, sc)
 		}
 	}
@@ -88,10 +92,10 @@ func generateCondition(str string) sortCondition {
 
 func generateOrder(str string) string {
 	switch str {
-	case desc:
-		return desc
 	case asc:
 		return asc
+	case desc:
+		return desc
 	default:
 		return asc
 	}
@@ -99,7 +103,7 @@ func generateOrder(str string) string {
 
 // check if the property exists
 // Attention: only for struct, return false for pointer
-func StructHasField(s interface{}, f string) bool {
+func IsStructHasField(s interface{}, f string) bool {
 	t := reflect.TypeOf(s)
 	if t.Kind() == reflect.Struct {
 		_, ok := t.FieldByNameFunc(func(n string) bool {
