@@ -9,6 +9,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
 
 type ResponseOfDeliverer struct {
@@ -28,14 +29,14 @@ func GetDeliverer(ctx *gin.Context) {
 	conf := &restapi.DetailConf{
 		ModelObj:               obj,
 		RespObj:                resp,
-		TransObjToRespFunc:     func() interface{} { return generateDelivererResponse(obj, resp) },
+		TransObjToRespFunc:     func(ac *auth.AccessControl) interface{} { return generateDelivererResponse(obj, resp) },
 		LoadAssociationsDBFunc: getDelivererDetailDB,
 	}
 
 	restapi.GetDetail(ctx, conf)
 }
 
-func getDelivererDetailDB(db *gorm.DB) *gorm.DB {
+func getDelivererDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return model.GenerateReadDelivererDB(db)
 }
 

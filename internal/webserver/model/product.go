@@ -46,9 +46,8 @@ func init() {
 }
 
 func GenerateReadProductDB(db, queryDB *gorm.DB) *gorm.DB {
-	return queryDB.Table(ProductTableName).
+	return queryDB.
 		Select("product.*,q.total_count,op.sold_count,(q.total_count - op.sold_count) as stocks").
-		//Select("product.*,q.total_count,op.sold_count").
 		Joins("left join (?) q on q.product_id = product.id", generateProductTotalCountQuery(db)).
 		Joins("left join (?) op on op.product_id = product.id", generateProductSoldCountQuery(db))
 }

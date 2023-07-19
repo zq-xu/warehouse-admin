@@ -9,13 +9,25 @@ import (
 
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
 func Delete(ctx *gin.Context, obj interface{}) {
-	id := ctx.Param(IDParam)
+	ac, ei := auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
 
-	ei := store.DoDBTransaction(store.DB(ctx), func(db *gorm.DB) *response.ErrorInfo {
+	if ac.User.Role <= 0 {
+		ei := response.NewCommonError(response.InvalidAuthErrorCode)
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
+	id := ctx.Param(IDParam)
+	ei = store.DoDBTransaction(store.DB(ctx), func(db *gorm.DB) *response.ErrorInfo {
 		err := store.GetByID(db, obj, id)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {

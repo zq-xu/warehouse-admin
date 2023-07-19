@@ -2,17 +2,14 @@ package productlot
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/internal/webserver/types"
-	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/list"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
-
-type ListResponseOfProductLot []ResponseOfProductLot
 
 func ListProductLot(ctx *gin.Context) {
 	listObj := make([]model.ProductLot, 0)
@@ -21,7 +18,7 @@ func ListProductLot(ctx *gin.Context) {
 		ModelObj:               &model.ProductLot{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
-		TransObjToRespFunc:     func() interface{} { return generateProductLotListResponse(listObj) },
+		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateProductLotListResponse(listObj) },
 		LoadAssociationsDBFunc: listProductLotDetailDB,
 		GenerateQueryFunc:      loadProductLotListQuery,
 	}
@@ -29,8 +26,13 @@ func ListProductLot(ctx *gin.Context) {
 	restapi.ApiListInstance.List(ctx, conf)
 }
 
-func listProductLotDetailDB(db, queryDB *gorm.DB) *gorm.DB {
-	return queryDB
+func listProductLotDetailDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
+	switch auth.RoleSet[ac.User.Role] {
+	case auth.UserUserRole:
+		return queryDB.Omit("SupplierID", "Supplier")
+	default:
+		return queryDB
+	}
 }
 
 func loadProductLotListQuery(db *gorm.DB, reqParams *list.Params) *gorm.DB {
@@ -41,17 +43,12 @@ func loadProductLotListQuery(db *gorm.DB, reqParams *list.Params) *gorm.DB {
 	return db
 }
 
-func generateProductLotListResponse(objList []model.ProductLot) interface{} {
-	items := make(ListResponseOfProductLot, 0)
+func generateProductLotListResponse(objList []model.ProductLot) []interface{} {
+	items := make([]interface{}, 0)
 
 	for _, v := range objList {
 		r := ResponseOfProductLot{}
-
-		err := copier.Copy(&r, &v)
-		if err != nil {
-			log.Logger.Errorf("Failed to copy product obj to response. %v", err)
-			return nil
-		}
+		_ = generateProductLotResponse(&v, &r)
 		items = append(items, r)
 	}
 

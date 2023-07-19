@@ -64,9 +64,15 @@ type ProductLotForDetail struct {
 	Comment         string    `json:"comment"`
 	Status          int       `json:"status"`
 
-	SupplierId string            `json:"supplierId"`
-	Product    ProductForDetail  `json:"product"`
-	Supplier   SupplierForDetail `json:"supplier"`
+	ProductId string           `json:"productId"`
+	Product   ProductForDetail `json:"product"`
+
+	SupplierId string             `json:"supplierId,omitempty"`
+	Supplier   *SupplierForDetail `json:"supplier,omitempty" description:"auth control"`
+}
+
+func (pl *ProductLotForDetail) ProductID(id int64) {
+	pl.ProductId = fmt.Sprintf("%d", id)
 }
 
 func (pl *ProductLotForDetail) SupplierID(id int64) {

@@ -12,6 +12,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
@@ -32,6 +33,12 @@ type StockInProductReq struct {
 
 func StockInProduct(ctx *gin.Context) {
 	reqParams, ei := newStockInProductReq(ctx)
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
+	_, ei = auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
 		return

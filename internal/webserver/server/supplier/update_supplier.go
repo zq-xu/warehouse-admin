@@ -7,6 +7,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/utils"
 )
 
@@ -24,8 +25,11 @@ func UpdateSupplier(ctx *gin.Context) {
 	obj := &model.Supplier{}
 
 	conf := &restapi.UpdateConf{
-		UpdateReq:    reqParams,
-		ModelObj:     obj,
+		UpdateReq: reqParams,
+		ModelObj:  obj,
+		AuthControl: restapi.AuthControl{
+			AuthValidation: func(ac *auth.AccessControl) bool { return ac.User.Role > 0 },
+		},
 		OptModelFunc: func(db *gorm.DB) *response.ErrorInfo { return optSupplierModelForUpdate(reqParams, obj) },
 	}
 

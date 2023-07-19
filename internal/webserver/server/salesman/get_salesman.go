@@ -9,6 +9,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
 
 type GetSalesmanReq struct {
@@ -34,18 +35,18 @@ func GetSalesman(ctx *gin.Context) {
 	conf := &restapi.DetailConf{
 		ModelObj:               obj,
 		RespObj:                resp,
-		TransObjToRespFunc:     func() interface{} { return generateSupplierResponse(obj, resp) },
-		LoadAssociationsDBFunc: getSupplierDetailDB,
+		TransObjToRespFunc:     func(ac *auth.AccessControl) interface{} { return generateSalesmanResponse(obj, resp) },
+		LoadAssociationsDBFunc: getSalesmanDetailDB,
 	}
 
 	restapi.GetDetail(ctx, conf)
 }
 
-func getSupplierDetailDB(db *gorm.DB) *gorm.DB {
+func getSalesmanDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return model.GenerateReadSalesmanDB(db, db)
 }
 
-func generateSupplierResponse(obj *model.SalesmanDetail, resp *ResponseOfSalesman) *response.ErrorInfo {
+func generateSalesmanResponse(obj *model.SalesmanDetail, resp *ResponseOfSalesman) *response.ErrorInfo {
 	err := copier.Copy(resp, obj)
 	if err != nil {
 		return response.NewCommonError(response.GenerateModelErrorCode, err.Error())

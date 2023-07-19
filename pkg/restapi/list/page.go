@@ -54,7 +54,7 @@ func GetPageInfo(ctx *gin.Context) (*PageInfo, *response.ErrorInfo) {
 	return pi, nil
 }
 
-func NewPageResponse(count int, pi *PageInfo, items interface{}) *PageResponse {
+func NewPageResponse(count int, pi *PageInfo, items []interface{}) *PageResponse {
 	pr := &PageResponse{
 		PageInfo: *pi,
 		Count:    count,

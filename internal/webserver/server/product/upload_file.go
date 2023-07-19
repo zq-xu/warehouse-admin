@@ -3,6 +3,7 @@ package product
 import (
 	"mime/multipart"
 	"net/http"
+	"os"
 	"path"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/utils"
 )
 
@@ -26,12 +28,18 @@ func UploadFile(ctx *gin.Context) {
 		return
 	}
 
-	_, localPath, ei := saveUploadFilesToLocal(ctx, reqParams)
+	_, ei = auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
 		return
 	}
-	//defer os.RemoveAll(dir)
+
+	dir, localPath, ei := saveUploadFilesToLocal(ctx, reqParams)
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+	defer os.RemoveAll(dir)
 
 	log.Logger.Infof("Succeed to save the file %s", localPath)
 	ctx.JSON(http.StatusCreated, struct{}{})

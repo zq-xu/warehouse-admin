@@ -2,7 +2,6 @@ package product
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
@@ -10,8 +9,9 @@ import (
 	"gorm.io/gorm"
 
 	"zq-xu/warehouse-admin/internal/webserver/model"
-	"zq-xu/warehouse-admin/pkg/log"
+	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/utils"
 )
 
@@ -48,25 +48,21 @@ func init() {
 	}
 }
 
-func (erd *ExcelRowData) ID(id interface{}) {
-	erd.Id = fmt.Sprintf("%v", id)
-}
-
-func (erd *ExcelRowData) ProductLots(list []model.ProductLot) {
+func (erd *ExcelRowData) ProductLots(list []types.ProductLotForDetail) {
 	bs, _ := json.Marshal(&list)
 	erd.ProductLotsJson = string(bs)
 }
 
 func ExportProduct(ctx *gin.Context) {
-	listObj := make([]model.Product, 0)
+	listObj := make([]model.ProductDetail, 0)
 	data := make([]interface{}, 0)
 
 	conf := &restapi.ListConf{
 		ModelObj:              &model.Product{},
 		ModelObjList:          &listObj,
 		FuzzySearchColumnList: []string{"url"},
-		TransObjToRespFunc: func() interface{} {
-			data = generateProductListExcelData(listObj, data)
+		TransObjToRespFunc: func(ac *auth.AccessControl) []interface{} {
+			data = generateProductListExcelData(listObj, data, ac)
 			return data
 		},
 		LoadAssociationsDBFunc: exportProductListDB,
@@ -76,24 +72,18 @@ func ExportProduct(ctx *gin.Context) {
 	restapi.ApiListInstance.List(ctx, conf)
 }
 
-func exportProductListDB(db, queryDB *gorm.DB) *gorm.DB {
-	return model.GenerateReadProductDB(queryDB, db).
-		Preload("ProductLots")
+func exportProductListDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
+	return model.GenerateReadProductDB(db, queryDB).Preload("ProductLots")
 }
 
-func generateProductListExcelData(objList []model.Product, data []interface{}) []interface{} {
+func generateProductListExcelData(objList []model.ProductDetail, data []interface{}, ac *auth.AccessControl) []interface{} {
 	for _, v := range objList {
-		r := ExcelRowData{}
-
-		err := copier.Copy(&r, &v)
-		if err != nil {
-			log.Logger.Errorf("Failed to copy product obj to response. %v", err)
-			return nil
-		}
-
-		data = append(data, r)
+		r := ResponseOfProduct{}
+		_ = generateProductResponse(&v, &r, ac)
+		erd := &ExcelRowData{}
+		_ = copier.Copy(erd, &r)
+		data = append(data, *erd)
 	}
-
 	return data
 }
 

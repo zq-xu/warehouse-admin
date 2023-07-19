@@ -2,15 +2,12 @@ package product
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 
 	"zq-xu/warehouse-admin/internal/webserver/model"
-	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
-
-type ListResponseOfProduct []ResponseOfProduct
 
 func ListProduct(ctx *gin.Context) {
 	listObj := make([]model.ProductDetail, 0)
@@ -19,28 +16,23 @@ func ListProduct(ctx *gin.Context) {
 		ModelObj:               &model.Product{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
-		TransObjToRespFunc:     func() interface{} { return generateProductListResponse(listObj) },
+		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateProductListResponse(listObj, ac) },
 		LoadAssociationsDBFunc: listProductDetailDB,
 	}
 
 	restapi.ApiListInstance.List(ctx, conf)
 }
 
-func listProductDetailDB(db, queryDB *gorm.DB) *gorm.DB {
+func listProductDetailDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return model.GenerateReadProductDB(db, queryDB)
 }
 
-func generateProductListResponse(objList []model.ProductDetail) interface{} {
-	items := make(ListResponseOfProduct, 0)
+func generateProductListResponse(objList []model.ProductDetail, ac *auth.AccessControl) []interface{} {
+	items := make([]interface{}, 0)
 
 	for _, v := range objList {
 		r := ResponseOfProduct{}
-
-		err := copier.Copy(&r, &v)
-		if err != nil {
-			log.Logger.Errorf("Failed to copy product obj to response. %v", err)
-			return nil
-		}
+		_ = generateProductResponse(&v, &r, ac)
 		items = append(items, r)
 	}
 

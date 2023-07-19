@@ -61,6 +61,12 @@ func CreateProduct(ctx *gin.Context) {
 		return
 	}
 
+	_, ei = auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
 	ei = store.DoDBTransaction(store.DB(ctx), func(db *gorm.DB) *response.ErrorInfo {
 		ei = store.EnsureNotExistByName(db, &model.Product{}, reqParams.Name)
 		if ei != nil {

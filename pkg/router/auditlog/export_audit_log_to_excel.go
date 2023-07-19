@@ -49,11 +49,14 @@ func ExportAuditLog(ctx *gin.Context) {
 		ModelObj:              &ModelAuditLog{},
 		ModelObjList:          &listObj,
 		FuzzySearchColumnList: []string{"url"},
-		TransObjToRespFunc: func() interface{} {
+		AuthControl: restapi.AuthControl{
+			AuthValidation: func(ac *auth.AccessControl) bool { return ac.User.Role > 0 },
+		},
+		TransObjToRespFunc: func(ac *auth.AccessControl) []interface{} {
 			data = generateAuditLogListExcelData(listObj, data)
 			return data
 		},
-		LoadAssociationsDBFunc: LoadAssociationsDB,
+		LoadAssociationsDBFunc: loadAssociationsDB,
 		ResponseWriteFunc:      func(ctx *gin.Context) { writeAuditLogToExcel(ctx, data) },
 	}
 

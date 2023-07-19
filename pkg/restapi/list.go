@@ -11,6 +11,7 @@ import (
 
 	"zq-xu/warehouse-admin/pkg/restapi/list"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
@@ -31,11 +32,14 @@ type ListConf struct {
 	//  }
 	//
 	//ModelObj: &SupplierDetail{}
-	ModelObj               interface{}
-	ModelObjList           interface{}
-	TransObjToRespFunc     func() interface{}
-	FuzzySearchColumnList  []string
-	LoadAssociationsDBFunc func(db, queryDB *gorm.DB) *gorm.DB
+	AuthControl
+
+	ModelObj              interface{}
+	ModelObjList          interface{}
+	TransObjToRespFunc    func(ac *auth.AccessControl) []interface{}
+	FuzzySearchColumnList []string
+
+	LoadAssociationsDBFunc func(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB
 	GenerateQueryFunc      func(db *gorm.DB, reqParams *list.Params) *gorm.DB
 	ResponseWriteFunc      func(ctx *gin.Context)
 }
@@ -45,6 +49,12 @@ var ApiListInstance = &apiList{}
 type apiList struct{}
 
 func (l *apiList) List(ctx *gin.Context, conf *ListConf) {
+	ei := conf.AuthControl.Validate(ctx)
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
 	reqParams, ei := list.GetListParams(ctx)
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
@@ -83,9 +93,9 @@ func (l *apiList) list(ctx context.Context, reqParams *list.Params, conf *ListCo
 		return nil, response.NewStorageError(response.StorageErrorCode, err)
 	}
 
-	var resp interface{}
+	var resp []interface{}
 	if conf.TransObjToRespFunc != nil {
-		resp = conf.TransObjToRespFunc()
+		resp = conf.TransObjToRespFunc(conf.AccessControl)
 	}
 
 	return list.NewPageResponse(int(count), reqParams.PageInfo, resp), nil
@@ -108,12 +118,10 @@ func (l *apiList) loadAllInfo(db, queryDB *gorm.DB, reqParams *list.Params, conf
 		conf.ModelObj)
 
 	if conf.LoadAssociationsDBFunc != nil {
-		queryDB = conf.LoadAssociationsDBFunc(db, queryDB)
+		queryDB = conf.LoadAssociationsDBFunc(db, queryDB, conf.AuthControl.AccessControl)
 	}
 
-	return queryDB.
-		//Preload(clause.Associations).
-		Find(conf.ModelObjList).Error
+	return queryDB.Find(conf.ModelObjList).Error
 }
 
 func (l *apiList) loadBaseInfo(queryDB *gorm.DB, reqParams *list.Params, conf *ListConf) error {

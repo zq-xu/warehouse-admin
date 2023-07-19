@@ -9,6 +9,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
 
 type ResponseOfCustomer struct {
@@ -30,14 +31,14 @@ func GetCustomer(ctx *gin.Context) {
 	conf := &restapi.DetailConf{
 		ModelObj:               obj,
 		RespObj:                resp,
-		TransObjToRespFunc:     func() interface{} { return generateCustomerResponse(obj, resp) },
+		TransObjToRespFunc:     func(ac *auth.AccessControl) interface{} { return generateCustomerResponse(obj, resp) },
 		LoadAssociationsDBFunc: getCustomerDetailDB,
 	}
 
 	restapi.GetDetail(ctx, conf)
 }
 
-func getCustomerDetailDB(db *gorm.DB) *gorm.DB {
+func getCustomerDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return model.GenerateReadCustomerDB(db, db)
 }
 

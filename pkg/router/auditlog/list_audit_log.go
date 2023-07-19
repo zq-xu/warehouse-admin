@@ -24,28 +24,29 @@ type ResponseOfAuditLog struct {
 	StatusCode int    `json:"status_code"`
 }
 
-type ListResponseOfAuditLog []ResponseOfAuditLog
-
 func ListAuditLog(ctx *gin.Context) {
 	listObj := make([]ModelAuditLog, 0)
 
 	conf := &restapi.ListConf{
-		ModelObj:               &ModelAuditLog{},
-		ModelObjList:           &listObj,
-		FuzzySearchColumnList:  []string{"url"},
-		TransObjToRespFunc:     func() interface{} { return generateAuditLogListResponse(listObj) },
-		LoadAssociationsDBFunc: LoadAssociationsDB,
+		ModelObj:              &ModelAuditLog{},
+		ModelObjList:          &listObj,
+		FuzzySearchColumnList: []string{"url"},
+		AuthControl: restapi.AuthControl{
+			AuthValidation: func(ac *auth.AccessControl) bool { return ac.User.Role > 0 },
+		},
+		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateAuditLogListResponse(listObj) },
+		LoadAssociationsDBFunc: loadAssociationsDB,
 	}
 
 	restapi.ApiListInstance.List(ctx, conf)
 }
 
-func LoadAssociationsDB(db, queryDB *gorm.DB) *gorm.DB {
+func loadAssociationsDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return GenerateReadAuditLogDB(queryDB)
 }
 
-func generateAuditLogListResponse(objList []ModelAuditLog) interface{} {
-	items := make(ListResponseOfAuditLog, 0)
+func generateAuditLogListResponse(objList []ModelAuditLog) []interface{} {
+	items := make([]interface{}, 0)
 
 	for _, v := range objList {
 		r := ResponseOfAuditLog{}

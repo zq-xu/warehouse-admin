@@ -11,6 +11,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
@@ -25,6 +26,18 @@ type CreateSupplierReq struct {
 func CreateSupplier(ctx *gin.Context) {
 	reqParams, ei := newCreateSupplierReq(ctx)
 	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
+	ac, ei := auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
+	if ac.User.Role <= 0 {
+		ei := response.NewCommonError(response.InvalidAuthErrorCode)
 		ctx.JSON(ei.Status, ei)
 		return
 	}

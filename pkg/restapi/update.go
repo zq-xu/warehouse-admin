@@ -14,35 +14,36 @@ import (
 )
 
 type UpdateConf struct {
-	UpdateReq        interface{}
-	ModelObj         interface{}
-	OmitString       []string
+	AuthControl
+
+	UpdateReq  interface{}
+	ModelObj   interface{}
+	OmitString []string
+
 	OptModelFunc     func(db *gorm.DB) *response.ErrorInfo
 	DealAssociations func(db *gorm.DB) *response.ErrorInfo
 }
 
 func Update(ctx *gin.Context, conf *UpdateConf) {
-	id := ctx.Param(IDParam)
-	err := ctx.ShouldBindJSON(conf.UpdateReq)
-	if err != nil {
-		ei := response.NewCommonError(response.InvalidParametersErrorCode, fmt.Sprintf("request body invalid. %v", err))
+	ei := conf.AuthControl.Validate(ctx)
+	if ei != nil {
 		ctx.JSON(ei.Status, ei)
 		return
 	}
 
-	ei := store.DoDBTransaction(store.DB(ctx), func(db *gorm.DB) *response.ErrorInfo {
+	id := ctx.Param(IDParam)
+	ei = store.DoDBTransaction(store.DB(ctx), func(db *gorm.DB) *response.ErrorInfo {
 		err := store.GetByID(db, conf.ModelObj, id)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return response.NewCommonError(response.NotFoundErrorCode)
 			}
-
 			return response.NewStorageError(response.StorageErrorCode, err)
 		}
 
-		ei := conf.OptModelFunc(db)
+		ei := optUpdateModel(ctx, db, conf)
 		if ei != nil {
-			return ei
+			return nil
 		}
 
 		err = store.Update(db, conf.ModelObj, conf.OmitString...)
@@ -57,7 +58,7 @@ func Update(ctx *gin.Context, conf *UpdateConf) {
 			}
 		}
 
-		log.Logger.Infof("Succeed to update obj %+v", conf.ModelObj)
+		log.Logger.Infof("Succeed to update obj %+v", id)
 		return nil
 	})
 	if ei != nil {
@@ -66,4 +67,14 @@ func Update(ctx *gin.Context, conf *UpdateConf) {
 	}
 
 	ctx.JSON(http.StatusCreated, struct{}{})
+}
+
+func optUpdateModel(ctx *gin.Context, db *gorm.DB, conf *UpdateConf) *response.ErrorInfo {
+	err := ctx.ShouldBindJSON(conf.UpdateReq)
+	if err != nil {
+		return response.NewCommonError(response.InvalidParametersErrorCode,
+			fmt.Sprintf("request body invalid. %v", err))
+	}
+
+	return conf.OptModelFunc(db)
 }

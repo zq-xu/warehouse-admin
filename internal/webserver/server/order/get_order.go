@@ -9,6 +9,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
 
 func GetOrder(ctx *gin.Context) {
@@ -18,14 +19,14 @@ func GetOrder(ctx *gin.Context) {
 	conf := &restapi.DetailConf{
 		ModelObj:               obj,
 		RespObj:                resp,
-		TransObjToRespFunc:     func() interface{} { return generateOrderResponse(obj, resp) },
+		TransObjToRespFunc:     func(ac *auth.AccessControl) interface{} { return generateOrderResponse(obj, resp) },
 		LoadAssociationsDBFunc: getOrderDetailDB,
 	}
 
 	restapi.GetDetail(ctx, conf)
 }
 
-func getOrderDetailDB(db *gorm.DB) *gorm.DB {
+func getOrderDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return model.GenerateReadOrderDB(db, db)
 }
 

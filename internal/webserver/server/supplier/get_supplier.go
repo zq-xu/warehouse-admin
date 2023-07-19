@@ -9,6 +9,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 )
 
 type ResponseOfSupplier struct {
@@ -29,16 +30,19 @@ func GetSupplier(ctx *gin.Context) {
 	resp := &ResponseOfSupplier{}
 
 	conf := &restapi.DetailConf{
-		ModelObj:               obj,
-		RespObj:                resp,
-		TransObjToRespFunc:     func() interface{} { return generateSupplierResponse(obj, resp) },
+		ModelObj: obj,
+		RespObj:  resp,
+		AuthControl: restapi.AuthControl{
+			AuthValidation: func(ac *auth.AccessControl) bool { return ac.User.Role > 0 },
+		},
+		TransObjToRespFunc:     func(ac *auth.AccessControl) interface{} { return generateSupplierResponse(obj, resp) },
 		LoadAssociationsDBFunc: getSupplierDetailDB,
 	}
 
 	restapi.GetDetail(ctx, conf)
 }
 
-func getSupplierDetailDB(db *gorm.DB) *gorm.DB {
+func getSupplierDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	return model.GenerateReadSupplierDB(db, db)
 }
 

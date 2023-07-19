@@ -10,6 +10,7 @@ import (
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/restapi/response"
+	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
 )
 
@@ -36,6 +37,12 @@ Key points:
 */
 func StockOut(ctx *gin.Context) {
 	reqParams, ei := newStockOutProductReq(ctx)
+	if ei != nil {
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
+	_, ei = auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
 		return
