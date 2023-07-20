@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -87,6 +88,13 @@ func GetStringFromPtr(ptr *string) string {
 		return ""
 	}
 	return *ptr
+}
+
+func GetStringFromInt64Ptr(ptr *int64) string {
+	if ptr == nil {
+		return ""
+	}
+	return fmt.Sprintf("%d", *ptr)
 }
 
 func GetIntFromPtr(ptr *int) int {

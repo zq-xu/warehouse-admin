@@ -22,6 +22,10 @@ type Product struct {
 	Comment        string `gorm:"size:512"`
 	Status         int
 
+	// The Order belongs to the Deliverer
+	CategoryID *int64 `gorm:"default:null"`
+	Category   Category
+
 	// has many relation: used to preload the ProductLots
 	ProductLots []ProductLot
 

@@ -13,18 +13,7 @@ import (
 )
 
 type ResponseOfProduct struct {
-	types.ModelBase `json:",inline"`
-
-	CreateProductReq `json:",inline"`
-
-	Image     string `json:"image"`
-	Thumbnail string `json:"thumbnail"`
-
-	TotalCount int `json:"totalCount"`
-	SoldCount  int `json:"soldCount"`
-	Stocks     int `json:"stocks"`
-
-	Status int `json:"status"`
+	types.ProductForDetail `json:",inline"`
 
 	ProductLots []types.ProductLotForDetail `json:"productLots"`
 }
@@ -46,9 +35,12 @@ func GetProduct(ctx *gin.Context) {
 func getProductDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
 	switch auth.RoleSet[ac.User.Role] {
 	case auth.UserUserRole:
-		return model.GenerateReadProductDB(db, db)
+		return model.GenerateReadProductDB(db, db).
+			Preload("Category")
 	default:
-		return model.GenerateReadProductDB(db, db).Preload("ProductLots.Supplier")
+		return model.GenerateReadProductDB(db, db).
+			Preload("Category").
+			Preload("ProductLots.Supplier")
 	}
 }
 

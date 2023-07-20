@@ -73,7 +73,9 @@ func ExportProduct(ctx *gin.Context) {
 }
 
 func exportProductListDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
-	return model.GenerateReadProductDB(db, queryDB).Preload("ProductLots")
+	return model.GenerateReadProductDB(db, queryDB).
+		Preload("Category").
+		Preload("ProductLots")
 }
 
 func generateProductListExcelData(objList []model.ProductDetail, data []interface{}, ac *auth.AccessControl) []interface{} {

@@ -41,14 +41,32 @@ type DelivererForDetail struct {
 	Phone     string `json:"phone"`
 }
 
+type CategoryForDetail struct {
+	ModelBase `json:",inline"`
+	Name      string `json:"name"`
+}
+
 type ProductForDetail struct {
-	ModelBase      `json:",inline"`
+	ModelBase `json:",inline"`
+
 	Name           string  `json:"name"`
 	Image          string  `json:"image"`
 	Thumbnail      string  `json:"thumbnail"`
 	Price          float32 `json:"price"`
 	StorageAddress string  `json:"storageAddress"`
 	Comment        string  `json:"comment"`
+	Status         int     `json:"status"`
+
+	TotalCount int `json:"totalCount"`
+	SoldCount  int `json:"soldCount"`
+	Stocks     int `json:"stocks"`
+
+	CategoryId string             `json:"categoryId"`
+	Category   *CategoryForDetail `json:"category"`
+}
+
+func (pl *ProductForDetail) CategoryID(id *int64) {
+	pl.CategoryId = utils.GetStringFromInt64Ptr(id)
 }
 
 type ProductLotForDetail struct {
@@ -82,9 +100,6 @@ func (pl *ProductLotForDetail) SupplierID(id int64) {
 type OrderForDetail struct {
 	ModelBase
 
-	CustomerId string `json:"customerId"`
-	SalesmanId string `json:"salesmanId"`
-
 	PayMode int     `json:"payMode"`
 	Paid    float32 `json:"paid"`
 	Comment string  `json:"comment"`
@@ -92,18 +107,33 @@ type OrderForDetail struct {
 	DeliveryMode    int             `json:"deliveryMode"`
 	DeliveryAt      *utils.UnixTime `json:"deliveryAt"`
 	DeliveryAddress string          `json:"deliveryAddress"`
-	DelivererId     string          `json:"delivererId"`
 
 	OrderNo    string  `json:"orderNo"`
 	TotalPrice float32 `json:"totalPrice"`
 	TotalPaid  float32 `json:"totalPaid"`
 	Status     int     `json:"status"`
 
+	CustomerId  string `json:"customerId"`
+	SalesmanId  string `json:"salesmanId"`
+	DelivererId string `json:"delivererId"`
+
 	Customer      CustomerForDetail       `json:"customer"`
 	Salesman      SalesmanForDetail       `json:"salesman"`
 	Deliverer     DelivererForDetail      `json:"deliverer"`
 	OrderProducts []OrderProductForDetail `json:"products"`
 	StockOuts     []StockOutForDetail     `json:"stockouts"`
+}
+
+func (od *OrderForDetail) CustomerID(id *int64) {
+	od.CustomerId = utils.GetStringFromInt64Ptr(id)
+}
+
+func (od *OrderForDetail) SalesmanID(id *int64) {
+	od.SalesmanId = utils.GetStringFromInt64Ptr(id)
+}
+
+func (od *OrderForDetail) DelivererID(id *int64) {
+	od.DelivererId = utils.GetStringFromInt64Ptr(id)
 }
 
 // Revise

@@ -24,7 +24,7 @@ func ListProduct(ctx *gin.Context) {
 }
 
 func listProductDetailDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
-	return model.GenerateReadProductDB(db, queryDB)
+	return model.GenerateReadProductDB(db, queryDB).Preload("Category")
 }
 
 func generateProductListResponse(objList []model.ProductDetail, ac *auth.AccessControl) []interface{} {
