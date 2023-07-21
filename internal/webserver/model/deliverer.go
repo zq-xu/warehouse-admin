@@ -10,6 +10,10 @@ const (
 	DelivererTableName = "deliverer"
 )
 
+var (
+	DelivererBaseInfoColumns = []string{"id", "name", "phone"}
+)
+
 // description:"default the column ID is the primaryKey
 type Deliverer struct {
 	store.Model

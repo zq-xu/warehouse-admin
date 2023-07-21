@@ -49,6 +49,7 @@ func GetCount(db *gorm.DB, t interface{}) (int64, error) {
 	return count, result.Error
 }
 
+// List
 // The value should be initialized slice, or example:
 // list := make([]Model, 0)
 // List(&list)

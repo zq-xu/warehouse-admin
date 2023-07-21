@@ -10,6 +10,10 @@ const (
 	SupplierTableName = "supplier"
 )
 
+var (
+	SupplierBaseInfoColumns = []string{"id", "name", "phone"}
+)
+
 // description:"default the column ID is the primaryKey
 type Supplier struct {
 	store.Model

@@ -16,6 +16,7 @@ func ListCustomer(ctx *gin.Context) {
 		ModelObj:               &model.Customer{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
+		BaseInfoColumnList:     model.CustomerBaseInfoColumns,
 		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateCustomerListResponse(listObj) },
 		LoadAssociationsDBFunc: LoadAssociationsDB,
 	}

@@ -16,6 +16,7 @@ func ListProduct(ctx *gin.Context) {
 		ModelObj:               &model.Product{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
+		BaseInfoColumnList:     model.ProductBaseInfoColumns,
 		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateProductListResponse(listObj, ac) },
 		LoadAssociationsDBFunc: listProductDetailDB,
 	}

@@ -10,6 +10,10 @@ const (
 	CustomerTableName = "customer"
 )
 
+var (
+	CustomerBaseInfoColumns = []string{"id", "name", "phone"}
+)
+
 // description:"default the column ID is the primaryKey
 type Customer struct {
 	store.Model

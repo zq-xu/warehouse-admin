@@ -10,6 +10,10 @@ const (
 	ProductTableName = "product"
 )
 
+var (
+	ProductBaseInfoColumns = []string{"id", "name", "storage_address", "status"}
+)
+
 // description:"default the column ID is the primaryKey
 type Product struct {
 	store.Model

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -13,6 +14,10 @@ import (
 	"zq-xu/warehouse-admin/pkg/restapi/response"
 	"zq-xu/warehouse-admin/pkg/router/auth"
 	"zq-xu/warehouse-admin/pkg/store"
+)
+
+var (
+	defaultBaseInfoColumnList = []string{"id", "name"}
 )
 
 type ListConf struct {
@@ -38,6 +43,7 @@ type ListConf struct {
 	ModelObjList          interface{}
 	TransObjToRespFunc    func(ac *auth.AccessControl) []interface{}
 	FuzzySearchColumnList []string
+	BaseInfoColumnList    []string
 
 	LoadAssociationsDBFunc func(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB
 	GenerateQueryFunc      func(db *gorm.DB, reqParams *list.Params) *gorm.DB
@@ -124,11 +130,21 @@ func (l *apiList) loadAllInfo(db, queryDB *gorm.DB, reqParams *list.Params, conf
 	return queryDB.Find(conf.ModelObjList).Error
 }
 
+func (conf *ListConf) getBaseInfoColumnList() []string {
+	if len(conf.BaseInfoColumnList) > 0 {
+		return conf.BaseInfoColumnList
+	}
+
+	return defaultBaseInfoColumnList
+}
+
 func (l *apiList) loadBaseInfo(queryDB *gorm.DB, reqParams *list.Params, conf *ListConf) error {
-	return store.OptPageDB(queryDB,
+	db := store.OptPageDB(queryDB,
 		reqParams.PageInfo.PageSize,
 		reqParams.PageInfo.PageNum,
 		reqParams.SortQuery,
-		conf.ModelObj).
-		Find(conf.ModelObjList).Error
+		conf.ModelObj)
+
+	db = db.Select(strings.Join(conf.getBaseInfoColumnList(), ","))
+	return db.Find(conf.ModelObjList).Error
 }

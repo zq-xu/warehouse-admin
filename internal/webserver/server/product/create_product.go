@@ -94,6 +94,7 @@ func CreateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, struct{}{})
 }
 
+// GenerateBaseReq
 // for audit log
 func GenerateBaseReq(ctx *gin.Context) (*CreateProductReq, *response.ErrorInfo) {
 	reqBody := &CreateProductReq{}
@@ -119,10 +120,12 @@ func newCreateProductReq(ctx *gin.Context) (*CreateProductReq, *response.ErrorIn
 	if ei != nil {
 		return nil, ei
 	}
-
 	reqBody.modelObj = store.GenerateModel()
 
-	ei = uploadImageToS3(ctx, reqBody)
+	isFileExist, ei := uploadImageToS3(ctx, reqBody)
+	if !isFileExist {
+		return reqBody, ei
+	}
 	if ei != nil {
 		return nil, ei
 	}
@@ -159,16 +162,24 @@ func openImageFile(ctx *gin.Context) (string, multipart.File, *response.ErrorInf
 	return fh.Filename, f, nil
 }
 
-func uploadImageToS3(ctx *gin.Context, reqParams *CreateProductReq) *response.ErrorInfo {
-	filename, f, ei := openImageFile(ctx)
-	if ei != nil {
-		return ei
+func uploadImageToS3(ctx *gin.Context, reqParams *CreateProductReq) (bool, *response.ErrorInfo) {
+	fh, err := ctx.FormFile(ImageFormKey)
+	if err != nil {
+		if err == http.ErrMissingFile {
+			return false, nil
+		}
+		return true, response.NewCommonError(response.GetFormFileErrorCode, err)
+	}
+
+	f, err := fh.Open()
+	if err != nil {
+		return true, response.NewCommonError(response.GetFormFileErrorCode, err)
 	}
 	defer f.Close()
 
-	reqParams.imageFormatSuffix = getFileFormatSuffix(filename)
+	reqParams.imageFormatSuffix = getFileFormatSuffix(fh.Filename)
 	if !utils.ContainString(productImageFormatSuffix, reqParams.imageFormatSuffix) {
-		return response.NewCommonError(response.InvalidImageFormatErrorCode)
+		return true, response.NewCommonError(response.InvalidImageFormatErrorCode)
 	}
 
 	imgS3Path := awsapi.GenerateS3BucketPath(reqParams.userId, productImageSubDir,
@@ -176,11 +187,11 @@ func uploadImageToS3(ctx *gin.Context, reqParams *CreateProductReq) *response.Er
 
 	op, err := awsapi.S3Client.UploadFileByReader(f, awsapi.S3Cfg.Bucket, imgS3Path)
 	if err != nil {
-		return response.NewCommonError(response.UploadFileToS3ErrorCode, err.Error())
+		return true, response.NewCommonError(response.UploadFileToS3ErrorCode, err.Error())
 	}
 
 	reqParams.Image = op.Location
-	return nil
+	return true, nil
 }
 
 func uploadThumbnailToS3(ctx *gin.Context, reqParams *CreateProductReq) *response.ErrorInfo {

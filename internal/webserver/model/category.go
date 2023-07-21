@@ -10,6 +10,10 @@ const (
 	CategoryTableName = "category"
 )
 
+var (
+	CategoryBaseInfoColumns = []string{"id", "name"}
+)
+
 // description:"default the column ID is the primaryKey
 type Category struct {
 	store.Model

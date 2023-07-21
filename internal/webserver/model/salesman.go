@@ -10,6 +10,10 @@ const (
 	SalesmanTableName = "salesman"
 )
 
+var (
+	SalesmanBaseInfoColumns = []string{"id", "name", "phone"}
+)
+
 // description:"default the column ID is the primaryKey
 type Salesman struct {
 	store.Model

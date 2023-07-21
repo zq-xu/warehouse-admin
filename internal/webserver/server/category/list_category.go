@@ -16,6 +16,7 @@ func ListCategory(ctx *gin.Context) {
 		ModelObj:               &model.Category{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
+		BaseInfoColumnList:     model.CategoryBaseInfoColumns,
 		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateCategoryListResponse(listObj) },
 		LoadAssociationsDBFunc: LoadAssociationsDB,
 	}

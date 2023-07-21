@@ -16,6 +16,7 @@ func ListSalesman(ctx *gin.Context) {
 		ModelObj:               &model.Salesman{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
+		BaseInfoColumnList:     model.SalesmanBaseInfoColumns,
 		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateSalesmanListResponse(listObj) },
 		LoadAssociationsDBFunc: LoadAssociationsDB,
 	}

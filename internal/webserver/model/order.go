@@ -14,7 +14,6 @@ const (
 
 var (
 	OrderOmitCreate = []string{"Salesman", "Deliverer", "Customer"}
-	OrderOmitUpdate = []string{"SalesmanID", "DelivererID", "CustomerID"}
 )
 
 // description:"default the column ID is the primaryKey

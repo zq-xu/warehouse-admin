@@ -16,6 +16,7 @@ func ListDeliverer(ctx *gin.Context) {
 		ModelObj:               &model.Deliverer{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
+		BaseInfoColumnList:     model.DelivererBaseInfoColumns,
 		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateDelivererListResponse(listObj) },
 		LoadAssociationsDBFunc: LoadAssociationsDB,
 	}

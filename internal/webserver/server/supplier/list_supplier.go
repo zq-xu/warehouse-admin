@@ -16,6 +16,7 @@ func ListSupplier(ctx *gin.Context) {
 		ModelObj:              &model.Supplier{},
 		ModelObjList:          &listObj,
 		FuzzySearchColumnList: []string{"name"},
+		BaseInfoColumnList:    model.SupplierBaseInfoColumns,
 		AuthControl: restapi.AuthControl{
 			AuthValidation: func(ac *auth.AccessControl) bool { return ac.User.Role > 0 },
 		},
