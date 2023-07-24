@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -23,7 +24,7 @@ var (
 
 	gjm = &jwt.GinJWTMiddleware{
 		Key:             []byte("secret key"),
-		Timeout:         time.Hour,
+		Timeout:         time.Second,
 		MaxRefresh:      time.Hour,
 		IdentityKey:     "user",
 		PayloadFunc:     generatePayLoad,
@@ -153,6 +154,12 @@ func authorize(data interface{}, ctx *gin.Context) bool {
 }
 
 func unauthorized(ctx *gin.Context, code int, message string) {
+	if strings.Contains(strings.ToLower(message), "expired") {
+		ei := response.NewCommonError(response.TokenExpiredErrorCode)
+		ctx.JSON(ei.Status, ei)
+		return
+	}
+
 	ctx.JSON(code,
 		&UnauthorizedResp{
 			Code:    code,

@@ -21,10 +21,7 @@ const (
 
 const (
 	InternalErrorCode ErrorSectionCode = iota
-)
-
-const (
-	StorageErrorCode ErrorSectionCode = iota
+	StorageErrorCode
 	TransactionCommitErrorCode
 )
 

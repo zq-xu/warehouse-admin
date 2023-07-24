@@ -3,7 +3,9 @@ package response
 import "net/http"
 
 const (
-	InvalidParametersErrorCode ErrorSectionCode = iota
+	InvalidAuthErrorCode ErrorSectionCode = iota
+	TokenExpiredErrorCode
+	InvalidParametersErrorCode
 	AlreadyExistsErrCode
 	NotFoundErrorCode
 	GenerateModelErrorCode
@@ -13,10 +15,11 @@ const (
 	UploadFileToS3ErrorCode
 	ResizeFileErrorCode
 	InvalidImageFormatErrorCode
-	InvalidAuthErrorCode
 )
 
 var commonErrorList = []ServiceErrorInfo{
+	{ErrorSectionCode: InvalidAuthErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusUnauthorized, ErrorMessageFmt: "Invalid auth."}},
+	{ErrorSectionCode: TokenExpiredErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusUnauthorized, ErrorMessageFmt: "Token expired."}},
 	{ErrorSectionCode: InvalidParametersErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusBadRequest, ErrorMessageFmt: "Invalid parameters!"}},
 	{ErrorSectionCode: AlreadyExistsErrCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusConflict, ErrorMessageFmt: "The object already exists!"}},
 	{ErrorSectionCode: NotFoundErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusBadRequest, ErrorMessageFmt: "The object is not found!"}},
@@ -27,7 +30,6 @@ var commonErrorList = []ServiceErrorInfo{
 	{ErrorSectionCode: UploadFileToS3ErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "Upload file error!"}},
 	{ErrorSectionCode: ResizeFileErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusInternalServerError, ErrorMessageFmt: "resize file error!"}},
 	{ErrorSectionCode: InvalidImageFormatErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusBadRequest, ErrorMessageFmt: "invalid file format error! support jpg / jpeg / png."}},
-	{ErrorSectionCode: InvalidAuthErrorCode, ErrorBaseInfo: ErrorBaseInfo{Status: http.StatusUnauthorized, ErrorMessageFmt: "invalid auth."}},
 }
 
 func init() {
