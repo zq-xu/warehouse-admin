@@ -27,6 +27,7 @@ import (
 
 const (
 	NameFormKey           = "name"
+	CategoryIdFormKey     = "categoryId"
 	PriceFormKey          = "price"
 	ImageFormKey          = "image"
 	StorageAddressFormKey = "storageAddress"
@@ -42,6 +43,7 @@ var productImageFormatSuffix = []string{".jpg", ".jpeg", ".png", ".svg"}
 
 type CreateProductReq struct {
 	Name           string  `json:"name"`
+	CategoryId     string  `json:"categoryId"`
 	Price          float32 `json:"price"`
 	StorageAddress string  `json:"storageAddress"`
 	Comment        string  `json:"comment"`
@@ -52,22 +54,22 @@ type CreateProductReq struct {
 	userId            string
 	imageFormatSuffix string
 	modelObj          store.Model
+	category          *model.Category
 }
 
 func CreateProduct(ctx *gin.Context) {
-	reqParams, ei := newCreateProductReq(ctx)
-	if ei != nil {
-		ctx.JSON(ei.Status, ei)
-		return
-	}
-
-	_, ei = auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
+	_, ei := auth.GetAccessControl(ctx, ctx.GetString(auth.AuthUserIDToken))
 	if ei != nil {
 		ctx.JSON(ei.Status, ei)
 		return
 	}
 
 	ei = store.DoDBTransaction(store.DB(ctx), func(db *gorm.DB) *response.ErrorInfo {
+		reqParams, ei := newCreateProductReq(ctx, db)
+		if ei != nil {
+			return ei
+		}
+
 		ei = store.EnsureNotExistByName(db, &model.Product{}, reqParams.Name)
 		if ei != nil {
 			return ei
@@ -98,16 +100,16 @@ func CreateProduct(ctx *gin.Context) {
 // for audit log
 func GenerateBaseReq(ctx *gin.Context) (*CreateProductReq, *response.ErrorInfo) {
 	reqBody := &CreateProductReq{}
+	reqBody.Name = ctx.PostForm(NameFormKey)
 
 	priceStr := ctx.PostForm(PriceFormKey)
 	f32, err := strconv.ParseFloat(priceStr, 32)
 	if err != nil {
 		return reqBody, response.NewCommonError(response.InvalidParametersErrorCode, fmt.Sprintf("request price invalid. %v", err))
 	}
-
 	reqBody.Price = float32(f32)
 
-	reqBody.Name = ctx.PostForm(NameFormKey)
+	reqBody.CategoryId = ctx.PostForm(CategoryIdFormKey)
 	reqBody.StorageAddress = ctx.PostForm(StorageAddressFormKey)
 	reqBody.Comment = ctx.PostForm(CommentFormKey)
 
@@ -115,19 +117,26 @@ func GenerateBaseReq(ctx *gin.Context) (*CreateProductReq, *response.ErrorInfo) 
 	return reqBody, nil
 }
 
-func newCreateProductReq(ctx *gin.Context) (*CreateProductReq, *response.ErrorInfo) {
+func newCreateProductReq(ctx *gin.Context, db *gorm.DB) (*CreateProductReq, *response.ErrorInfo) {
 	reqBody, ei := GenerateBaseReq(ctx)
 	if ei != nil {
 		return nil, ei
 	}
-	reqBody.modelObj = store.GenerateModel()
 
-	isFileExist, ei := uploadImageToS3(ctx, reqBody)
-	if !isFileExist {
-		return reqBody, ei
+	// check the category exist
+	err := store.GetByID(db, &reqBody.category, reqBody.CategoryId)
+	if err != nil {
+		return nil, response.NewCommonError(response.NotFoundErrorCode)
 	}
+
+	reqBody.modelObj = store.GenerateModel()
+	isFileExist, ei := uploadImageToS3(ctx, reqBody)
 	if ei != nil {
 		return nil, ei
+	}
+	// the image is not uploaded
+	if !isFileExist {
+		return reqBody, ei
 	}
 
 	ei = uploadThumbnailToS3(ctx, reqBody)
@@ -248,5 +257,6 @@ func generateProductModelForCreation(reqParams *CreateProductReq) (*model.Produc
 		return nil, response.NewCommonError(response.GenerateModelErrorCode, err.Error())
 	}
 
+	t.CategoryID = utils.GetInt64PtrDefaultNil(reqParams.category.ID)
 	return t, nil
 }
