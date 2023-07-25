@@ -24,7 +24,7 @@ var (
 
 	gjm = &jwt.GinJWTMiddleware{
 		Key:             []byte("secret key"),
-		Timeout:         time.Second,
+		Timeout:         time.Hour,
 		MaxRefresh:      time.Hour,
 		IdentityKey:     "user",
 		PayloadFunc:     generatePayLoad,

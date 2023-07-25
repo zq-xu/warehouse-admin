@@ -74,7 +74,7 @@ type ProductLotForDetail struct {
 
 	LotNo           string    `json:"lotNo"`
 	PurchasingCount int       `json:"purchasingCount"`
-	PurchasingPrice float32   `json:"purchasingPrice"`
+	PurchasingPrice float32   `json:"purchasingPrice,omitempty"`
 	PurchasingDate  time.Time `json:"purchasingDate"`
 	Paid            float32   `json:"paid"`
 	Count           int       `json:"count"`

@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 
+	"zq-xu/warehouse-admin/internal/webserver/brick"
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
@@ -33,15 +34,8 @@ func GetProduct(ctx *gin.Context) {
 }
 
 func getProductDetailDB(db *gorm.DB, ac *auth.AccessControl) *gorm.DB {
-	switch auth.RoleSet[ac.User.Role] {
-	case auth.UserUserRole:
-		return model.GenerateReadProductDB(db, db).
-			Preload("Category")
-	default:
-		return model.GenerateReadProductDB(db, db).
-			Preload("Category").
-			Preload("ProductLots.Supplier")
-	}
+	db = model.GenerateReadProductDB(db, db).Preload("Category")
+	return brick.OptProductDBByAuth(db, ac)
 }
 
 func generateProductResponse(obj *model.ProductDetail, resp *ResponseOfProduct, ac *auth.AccessControl) *response.ErrorInfo {
@@ -50,12 +44,6 @@ func generateProductResponse(obj *model.ProductDetail, resp *ResponseOfProduct, 
 		return response.NewCommonError(response.GenerateModelErrorCode, err.Error())
 	}
 
-	if auth.RoleSet[ac.User.Role] == auth.UserUserRole {
-		for k := range resp.ProductLots {
-			resp.ProductLots[k].SupplierId = ""
-			resp.ProductLots[k].Supplier = nil
-		}
-	}
-
+	brick.OptProductLotListRespByAuth(resp.ProductLots, ac)
 	return nil
 }

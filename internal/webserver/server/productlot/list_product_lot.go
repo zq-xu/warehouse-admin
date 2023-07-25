@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
+	"zq-xu/warehouse-admin/internal/webserver/brick"
 	"zq-xu/warehouse-admin/internal/webserver/model"
 	"zq-xu/warehouse-admin/internal/webserver/types"
 	"zq-xu/warehouse-admin/pkg/restapi"
@@ -18,7 +19,7 @@ func ListProductLot(ctx *gin.Context) {
 		ModelObj:               &model.ProductLot{},
 		ModelObjList:           &listObj,
 		FuzzySearchColumnList:  []string{"name"},
-		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateProductLotListResponse(listObj) },
+		TransObjToRespFunc:     func(ac *auth.AccessControl) []interface{} { return generateProductLotListResponse(listObj, ac) },
 		LoadAssociationsDBFunc: listProductLotDetailDB,
 		GenerateQueryFunc:      loadProductLotListQuery,
 	}
@@ -27,12 +28,7 @@ func ListProductLot(ctx *gin.Context) {
 }
 
 func listProductLotDetailDB(db, queryDB *gorm.DB, ac *auth.AccessControl) *gorm.DB {
-	switch auth.RoleSet[ac.User.Role] {
-	case auth.UserUserRole:
-		return queryDB.Omit("SupplierID", "Supplier")
-	default:
-		return queryDB
-	}
+	return brick.OptProductLotDBByAuth(queryDB, ac)
 }
 
 func loadProductLotListQuery(db *gorm.DB, reqParams *list.Params) *gorm.DB {
@@ -43,12 +39,12 @@ func loadProductLotListQuery(db *gorm.DB, reqParams *list.Params) *gorm.DB {
 	return db
 }
 
-func generateProductLotListResponse(objList []model.ProductLot) []interface{} {
+func generateProductLotListResponse(objList []model.ProductLot, ac *auth.AccessControl) []interface{} {
 	items := make([]interface{}, 0)
 
 	for _, v := range objList {
-		r := ResponseOfProductLot{}
-		_ = generateProductLotResponse(&v, &r)
+		r := types.ProductLotForDetail{}
+		_ = generateProductLotResponse(&v, &r, ac)
 		items = append(items, r)
 	}
 
