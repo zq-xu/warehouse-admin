@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
@@ -192,7 +193,7 @@ func uploadImageToS3(ctx *gin.Context, reqParams *CreateProductReq) (bool, *resp
 	}
 
 	imgS3Path := awsapi.GenerateS3BucketPath(reqParams.userId, productImageSubDir,
-		fmt.Sprintf("%d%s", reqParams.modelObj.ID, reqParams.imageFormatSuffix))
+		fmt.Sprintf("%d-%d%s", reqParams.modelObj.ID, time.Now().Unix(), reqParams.imageFormatSuffix))
 
 	op, err := awsapi.S3Client.UploadFileByReader(f, awsapi.S3Cfg.Bucket, imgS3Path)
 	if err != nil {
@@ -204,7 +205,7 @@ func uploadImageToS3(ctx *gin.Context, reqParams *CreateProductReq) (bool, *resp
 }
 
 func uploadThumbnailToS3(ctx *gin.Context, reqParams *CreateProductReq) *response.ErrorInfo {
-	thumbnailName := fmt.Sprintf("%d_tmp%s", reqParams.modelObj.ID, reqParams.imageFormatSuffix)
+	thumbnailName := fmt.Sprintf("%d-%d_tmp%s", reqParams.modelObj.ID, time.Now().Unix(), reqParams.imageFormatSuffix)
 	thumbnailPath, ei := generateThumbnail(ctx, thumbnailName)
 	if ei != nil {
 		return ei

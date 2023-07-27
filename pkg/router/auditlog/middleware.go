@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 
 	"zq-xu/warehouse-admin/pkg/log"
 	"zq-xu/warehouse-admin/pkg/router/auth"
