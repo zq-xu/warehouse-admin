@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "cicdWebserver.fullName" . }}
+  labels:
+    app: {{ template "cicdWebserver.fullName" . }}
+spec:
+  ports:
+    - port: {{ .Values.cicdWebserver.port }}
+      targetPort: {{ .Values.cicdWebserver.port }}
+  type: {{ .Values.cicdWebserver.serviceType }}
+  selector:
+    app.kubernetes.io/name: {{ template "cicdWebserver.fullName" . }}
